@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import LottieAnimation from "@/components/LottieAnimation";
 
 /* ------------------------------------------------------------------ */
 /*  Data                                                                */
@@ -68,36 +69,6 @@ function ArrowIcon() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Animated Radar Component                                            */
-/* ------------------------------------------------------------------ */
-
-function AnimatedRadar() {
-  return (
-    <div className="hero-radar" style={{ position: "relative", width: 465, height: 465 }}>
-      {/* Concentric circles with pulse animation */}
-      <div className="hero-radar-ring hero-radar-ring-1" />
-      <div className="hero-radar-ring hero-radar-ring-2" />
-      <div className="hero-radar-ring hero-radar-ring-3" />
-      <div className="hero-radar-ring hero-radar-ring-4" />
-
-      {/* Rotating sweep line */}
-      <div className="hero-radar-sweep" />
-
-      {/* Center logo */}
-      <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", zIndex: 5 }}>
-        <Image
-          src="/images/hero-omni-logo.png"
-          alt="Omni Agent"
-          width={151}
-          height={151}
-          style={{ borderRadius: "50%" }}
-        />
-      </div>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
 /*  Component                                                           */
 /* ------------------------------------------------------------------ */
 
@@ -108,7 +79,7 @@ export default function HeroSection() {
       className="relative z-[2] flex w-full flex-col items-center justify-center overflow-hidden"
       style={{ backgroundColor: "#F4F8FF" }}
     >
-      {/* Animated Background — cloudy gradient matching source */}
+      {/* Animated Background — soft blue gradient + cloud blobs */}
       <div
         className="hero-bg-animation"
         style={{
@@ -121,51 +92,27 @@ export default function HeroSection() {
           background: "linear-gradient(180deg, #F4F8FF 0%, #F4F8FF 35%, #e0ecff 55%, #c5d8f8 65%, #d0e3ff 75%, #e8f0ff 85%, #F4F8FF 100%)",
         }}
       />
-      {/* Soft blue cloud blobs */}
-      <div style={{
-        position: "absolute",
-        bottom: "5%",
-        left: "-10%",
-        width: "60%",
-        height: "50%",
-        background: "radial-gradient(ellipse at center, rgba(21, 94, 239, 0.08) 0%, transparent 70%)",
-        filter: "blur(60px)",
-        zIndex: 1,
-      }} />
-      <div style={{
-        position: "absolute",
-        bottom: "0%",
-        right: "-5%",
-        width: "50%",
-        height: "45%",
-        background: "radial-gradient(ellipse at center, rgba(21, 94, 239, 0.10) 0%, transparent 70%)",
-        filter: "blur(50px)",
-        zIndex: 1,
-      }} />
-      <div style={{
-        position: "absolute",
-        bottom: "10%",
-        left: "30%",
-        width: "40%",
-        height: "40%",
-        background: "radial-gradient(ellipse at center, rgba(255, 255, 255, 0.6) 0%, transparent 70%)",
-        filter: "blur(40px)",
-        zIndex: 1,
-      }} />
+      <div style={{ position: "absolute", bottom: "5%", left: "-10%", width: "60%", height: "50%", background: "radial-gradient(ellipse at center, rgba(21, 94, 239, 0.08) 0%, transparent 70%)", filter: "blur(60px)", zIndex: 1 }} />
+      <div style={{ position: "absolute", bottom: "0%", right: "-5%", width: "50%", height: "45%", background: "radial-gradient(ellipse at center, rgba(21, 94, 239, 0.10) 0%, transparent 70%)", filter: "blur(50px)", zIndex: 1 }} />
+      <div style={{ position: "absolute", bottom: "10%", left: "30%", width: "40%", height: "40%", background: "radial-gradient(ellipse at center, rgba(255, 255, 255, 0.6) 0%, transparent 70%)", filter: "blur(40px)", zIndex: 1 }} />
 
       {/* Content */}
-      <div
-        className="relative z-[3] flex w-full max-w-[1150px] flex-col items-center px-4 pt-[152px] pb-[50px]"
-      >
+      <div className="relative z-[3] flex w-full max-w-[1150px] flex-col items-center px-4 pt-[152px] pb-[50px]">
+        {/* Sparkle icon (Lottie) */}
+        <div style={{ position: "absolute", top: 100, left: 80 }}>
+          <LottieAnimation src="/lottie/sparkle-icon.json" style={{ width: 24, height: 24 }} />
+        </div>
+
         {/* Hero Text Block */}
         <div className="flex flex-col items-center gap-4 pb-7">
           {/* Tagline Pill */}
           <div
-            className="flex h-[34px] items-center rounded-full bg-white px-5"
+            className="flex h-[34px] items-center gap-2 rounded-full bg-white px-5"
             style={{
               boxShadow: "rgba(204,219,235,0.11) 0px 0.6px 0.6px -0.83px, rgba(204,219,235,0.11) 0px 2.3px 2.3px -1.67px, rgba(204,219,235,0.11) 0px 10px 10px -2.5px",
             }}
           >
+            <LottieAnimation src="/lottie/sparkle-icon.json" style={{ width: 16, height: 16 }} />
             <span className="text-[14px] font-semibold text-[#182230]">
               24/7 AI Sales Agent
             </span>
@@ -203,7 +150,7 @@ export default function HeroSection() {
 
         {/* Hero Animation Area */}
         <div className="relative mt-8 flex w-full items-center justify-center" style={{ height: 500 }}>
-          {/* Floating Avatars */}
+          {/* Floating Avatars with real Lottie-extracted positions */}
           {HERO_AVATARS.map((avatar, i) => (
             <div
               key={i}
@@ -227,8 +174,31 @@ export default function HeroSection() {
             </div>
           ))}
 
-          {/* Animated Radar */}
-          <AnimatedRadar />
+          {/* Real Lottie Radar Animation (extracted from source) */}
+          <div style={{ position: "relative", width: 465, height: 465, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <LottieAnimation
+              src="/lottie/radar.json"
+              style={{ width: 465, height: 465, position: "absolute" }}
+            />
+            {/* Center logo */}
+            <div style={{ position: "relative", zIndex: 5 }}>
+              <Image
+                src="/images/hero-omni-logo.png"
+                alt="Omni Agent"
+                width={151}
+                height={151}
+                style={{ borderRadius: "50%" }}
+              />
+            </div>
+          </div>
+
+          {/* Processing Animation (Lottie) — overlaid on the radar */}
+          <div style={{ position: "absolute", top: "35%", left: "50%", transform: "translateX(-50%)", zIndex: 6, width: 235, height: 156 }}>
+            <LottieAnimation
+              src="/lottie/processing-animation.json"
+              style={{ width: 235, height: 156 }}
+            />
+          </div>
 
           {/* Prospect Discovery Label */}
           <div

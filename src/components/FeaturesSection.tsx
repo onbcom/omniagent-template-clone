@@ -1,4 +1,5 @@
 import Image from "next/image";
+import LottieAnimation from "@/components/LottieAnimation";
 
 /* ------------------------------------------------------------------ */
 /*  Shared sub-components                                              */
@@ -132,24 +133,6 @@ function CalendarBookingVisual() {
 /* ------------------------------------------------------------------ */
 
 function ScaleNetworkVisual() {
-  /* Node positions for a simple network diagram */
-  const nodes: readonly { cx: number; cy: number; hasAvatar: boolean; color: string }[] = [
-    { cx: 180, cy: 80, hasAvatar: true, color: "#155EEF" },
-    { cx: 80, cy: 50, hasAvatar: false, color: "#E4E7EC" },
-    { cx: 300, cy: 55, hasAvatar: true, color: "#6941C6" },
-    { cx: 130, cy: 140, hasAvatar: true, color: "#12B76A" },
-    { cx: 260, cy: 135, hasAvatar: false, color: "#E4E7EC" },
-    { cx: 50, cy: 120, hasAvatar: false, color: "#E4E7EC" },
-    { cx: 330, cy: 130, hasAvatar: false, color: "#E4E7EC" },
-    { cx: 200, cy: 160, hasAvatar: false, color: "#E4E7EC" },
-  ];
-
-  const edges: readonly [number, number][] = [
-    [0, 1], [0, 2], [0, 3], [0, 4],
-    [1, 5], [2, 6], [3, 4], [3, 7],
-    [4, 7], [1, 3],
-  ];
-
   return (
     <div className="relative flex w-full flex-col items-center overflow-hidden rounded-t-[20px] bg-[#F4F8FF] px-6 pt-6 pb-4">
       {/* >1M stat */}
@@ -158,48 +141,13 @@ function ScaleNetworkVisual() {
           &gt;1M
         </span>
       </div>
-      {/* Network SVG */}
-      <svg
-        viewBox="0 0 380 180"
-        className="h-[140px] w-full"
-        fill="none"
-        aria-hidden="true"
-      >
-        {/* Connection lines */}
-        {edges.map(([a, b]) => (
-          <line
-            key={`${a}-${b}`}
-            x1={nodes[a].cx}
-            y1={nodes[a].cy}
-            x2={nodes[b].cx}
-            y2={nodes[b].cy}
-            stroke="#E4E7EC"
-            strokeWidth="1.5"
-          />
-        ))}
-        {/* Nodes */}
-        {nodes.map((node, i) => (
-          <g key={i}>
-            <circle
-              cx={node.cx}
-              cy={node.cy}
-              r={node.hasAvatar ? 18 : 8}
-              fill={node.hasAvatar ? node.color : "white"}
-              stroke={node.hasAvatar ? "white" : node.color}
-              strokeWidth={node.hasAvatar ? 3 : 1.5}
-            />
-            {node.hasAvatar && (
-              <circle
-                cx={node.cx}
-                cy={node.cy}
-                r={12}
-                fill={node.color}
-                opacity={0.5}
-              />
-            )}
-          </g>
-        ))}
-      </svg>
+      {/* Lottie Animation (extracted from source) */}
+      <div style={{ width: 297, height: 200 }}>
+        <LottieAnimation
+          src="/lottie/features-frame79.json"
+          style={{ width: 297, height: 200 }}
+        />
+      </div>
     </div>
   );
 }

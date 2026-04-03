@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import LottieAnimation from "@/components/LottieAnimation";
 
 /* ------------------------------------------------------------------ */
 /*  Shared arrow icon                                                   */
@@ -231,14 +232,12 @@ function LeadResearchVisual() {
       className="relative flex items-center justify-center"
       style={{ width: 422, height: 343 }}
     >
-      {/* Animated Radar concentric circles */}
+      {/* Lottie Radar Animation (extracted from source) */}
       <div className="absolute flex items-center justify-center" style={{ width: 288, height: 288, right: 20, top: 0 }}>
-        <div className="hero-radar-ring" style={{ width: 288, height: 288, borderColor: "rgba(21, 94, 239, 0.06)", animationDelay: "0s" }} />
-        <div className="hero-radar-ring" style={{ width: 220, height: 220, borderColor: "rgba(21, 94, 239, 0.1)", animationDelay: "0.5s" }} />
-        <div className="hero-radar-ring" style={{ width: 150, height: 150, borderColor: "rgba(21, 94, 239, 0.16)", animationDelay: "1s" }} />
-        <div className="hero-radar-ring" style={{ width: 80, height: 80, borderColor: "rgba(21, 94, 239, 0.2)", background: "radial-gradient(circle, rgba(21, 94, 239, 0.08) 0%, transparent 100%)", animationDelay: "1.5s" }} />
-        {/* Sweep */}
-        <div className="hero-radar-sweep" style={{ width: 144, height: 144 }} />
+        <LottieAnimation
+          src="/lottie/radar.json"
+          style={{ width: 288, height: 307, position: "absolute" }}
+        />
         {/* Logo orb center */}
         <div className="absolute z-[2]">
           <Image

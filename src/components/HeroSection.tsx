@@ -1,87 +1,167 @@
 import Image from "next/image";
 
-const activityPills = [
-  { label: "Qualified Leads", dotColor: "#12B76A", eliminated: false },
-  { label: "Recovered orders", dotColor: "#12B76A", eliminated: false },
-  { label: "Scheduled Callbacks", dotColor: "#12B76A", eliminated: false },
+interface ActivityPill {
+  readonly label: string;
+  readonly color: string;
+  readonly strikethrough?: boolean;
+}
+
+const ACTIVITY_PILLS: readonly ActivityPill[] = [
+  { label: "Qualified Leads", color: "rgb(18, 183, 106)" },
+  { label: "Recovered orders", color: "rgb(18, 183, 106)" },
+  { label: "Scheduled Callbacks", color: "rgb(18, 183, 106)" },
   {
     label: "Generic inquiry emails",
-    dotColor: "#F04438",
-    eliminated: true,
+    color: "rgb(240, 68, 56)",
+    strikethrough: true,
   },
-] as const;
+];
 
-const avatarCount = 8;
+const AVATAR_COUNT = 8;
+
+function ChainIcon() {
+  return (
+    <svg
+      width="36"
+      height="36"
+      viewBox="0 0 36 36"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="inline-block align-middle mx-1"
+      aria-hidden="true"
+    >
+      <path
+        d="M15.75 22.5H12C9.51472 22.5 7.5 20.4853 7.5 18C7.5 15.5147 9.51472 13.5 12 13.5H15.75"
+        stroke="#155EEF"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M20.25 13.5H24C26.4853 13.5 28.5 15.5147 28.5 18C28.5 20.4853 26.4853 22.5 24 22.5H20.25"
+        stroke="#155EEF"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M13.5 18H22.5"
+        stroke="#155EEF"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function ArrowIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path
+        d="M3.33337 8H12.6667"
+        stroke="#155EEF"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M8.66663 4L12.6666 8L8.66663 12"
+        stroke="#155EEF"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
 export default function HeroSection() {
   return (
-    <section className="relative w-full overflow-hidden bg-white">
-      {/* White top area with content */}
-      <div className="relative mx-auto flex max-w-4xl flex-col items-center px-6 pt-[120px] pb-8 text-center">
-        {/* Tag pill */}
-        <span className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-1.5 text-sm font-medium text-[#344054] shadow-sm ring-1 ring-[#E4E7EC] backdrop-blur">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path d="M8 1L9.79 5.52L14.66 5.83L10.93 9.08L12.08 13.82L8 11.27L3.92 13.82L5.07 9.08L1.34 5.83L6.21 5.52L8 1Z" fill="#155EEF" opacity="0.6"/>
-          </svg>
-          24/7 AI Sales Agent
-        </span>
+    <section
+      id="hero"
+      className="relative z-[2] flex w-full flex-col items-center justify-center bg-[#F4F8FF]"
+    >
+      <div className="relative z-[3] flex max-w-[1150px] flex-col items-center overflow-hidden pt-[152px] pb-[50px] w-full px-4">
+        {/* Hero Text Block */}
+        <div className="flex flex-col items-center gap-4 pb-7">
+          {/* Tagline Pill */}
+          <div
+            className="flex h-[34px] items-center rounded-full bg-white px-5"
+            style={{
+              boxShadow:
+                "rgba(204,219,235,0.11) 0px 0.6px 0.6px -0.83px, rgba(204,219,235,0.11) 0px 2.3px 2.3px -1.67px, rgba(204,219,235,0.11) 0px 10px 10px -2.5px",
+            }}
+          >
+            <span className="text-[14px] font-semibold text-[#182230]">
+              24/7 AI Sales Agent
+            </span>
+          </div>
 
-        {/* Main heading */}
-        <h1 className="text-[36px] font-semibold leading-[1.2] tracking-[-1.12px] text-[#0C111D] md:text-[56px]">
-          Sales Engine that
-          <br />
-          <span className="relative inline-flex items-center">
-            <em className="not-italic text-[#155EEF]">Never</em>
-            <svg className="mx-2 inline-block h-8 w-8 text-[#155EEF] md:h-10 md:w-10" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-              <path d="M10 16C10 12.686 12.686 10 16 10C19.314 10 22 12.686 22 16C22 19.314 19.314 22 16 22" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-              <path d="M16 22C12.686 22 10 19.314 10 16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" opacity="0.4"/>
-            </svg>
-          </span>
-          Sleeps
-        </h1>
-
-        {/* Subtitle */}
-        <p className="mt-5 max-w-[560px] text-lg leading-7 text-[#475467]">
-          Automate prospecting, personalize outreach, and book 5&times; more
-          meetings&mdash;before your competition even logs in.
-        </p>
+          {/* Title + Subtitle */}
+          <div className="flex max-w-[730px] flex-col items-center gap-1.5">
+            <h1 className="text-center text-[48px] font-semibold leading-[67.2px] tracking-[-0.96px] text-[#0C111D]">
+              Sales Engine that
+              <br />
+              <span className="text-[#155EEF]">Never</span>
+              <ChainIcon />
+              Sleeps
+            </h1>
+            <p className="text-center text-[16px] font-medium leading-[22.4px] tracking-[-0.32px] text-[#344054]">
+              Automate prospecting, personalize outreach, and book 5× more
+              meetings—before your competition even logs in.
+            </p>
+          </div>
+        </div>
 
         {/* CTA Button */}
         <a
           href="#"
-          className="mt-8 inline-flex items-center justify-center gap-2 rounded-full bg-[#155EEF] px-8 py-3.5 text-base font-semibold text-white shadow-md transition hover:bg-[#1350D4]"
+          className="flex flex-row items-center rounded-[1000px] bg-[#155EEF] pl-5 pr-2.5 pt-3 pb-3 no-underline"
+          style={{ width: 150.578, height: 52 }}
         >
-          Get Started
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path d="M6 12L10 8L6 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
+          <span className="text-[16px] font-semibold leading-none tracking-[-0.32px] text-white">
+            Get Started
+          </span>
+          <span className="ml-2 flex h-7 w-7 items-center justify-center rounded-full bg-white">
+            <ArrowIcon />
+          </span>
         </a>
 
-        {/* Activity feed pills */}
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-          {activityPills.map((pill) => (
-            <span
-              key={pill.label}
-              className={`inline-flex items-center gap-2 rounded-full border border-[#E4E7EC] bg-white/80 px-4 py-2 text-sm shadow-sm backdrop-blur ${
-                pill.eliminated
-                  ? "text-[#344054] line-through"
-                  : "text-[#344054]"
-              }`}
-            >
-              <span
-                className="inline-block h-2 w-2 rounded-full"
-                style={{ backgroundColor: pill.dotColor }}
-                aria-hidden="true"
-              />
-              {pill.label}
-            </span>
-          ))}
-        </div>
+        {/* Lower Area */}
+        <div className="flex w-full flex-col items-center">
+          {/* Activity Pills Row */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
+            {ACTIVITY_PILLS.map((pill) => (
+              <div
+                key={pill.label}
+                className="flex items-center gap-2 rounded-full border border-[#E4E7EC] bg-white px-3 py-1.5"
+              >
+                <span
+                  className="h-2 w-2 shrink-0 rounded-full"
+                  style={{ backgroundColor: pill.color }}
+                />
+                <span
+                  className={`text-[14px] font-semibold text-[#191A1C] ${
+                    pill.strikethrough ? "line-through" : ""
+                  }`}
+                >
+                  {pill.label}
+                </span>
+              </div>
+            ))}
+          </div>
 
-        {/* Avatar row */}
-        <div className="mt-10 flex flex-col items-center gap-3">
-          <div className="flex items-center">
-            {Array.from({ length: avatarCount }, (_, i) => (
+          {/* Avatar Stack */}
+          <div className="mt-6 flex items-center justify-center">
+            {Array.from({ length: AVATAR_COUNT }, (_, i) => (
               <div
                 key={i}
                 className={`relative h-10 w-10 overflow-hidden rounded-full border-2 border-white ${
@@ -98,40 +178,20 @@ export default function HeroSection() {
               </div>
             ))}
           </div>
-        </div>
-      </div>
 
-      {/* Blue watercolor gradient background transition */}
-      <div className="relative h-[500px] w-full overflow-hidden">
-        {/* Watercolor background image */}
-        <Image
-          src="/images/hero-watercolor-bg.png"
-          alt=""
-          fill
-          className="object-cover object-top"
-          aria-hidden="true"
-          priority
-        />
-        {/* Blue overlay gradient */}
-        <div
-          className="absolute inset-0"
-          aria-hidden="true"
-          style={{
-            background: "linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(21,94,239,0.15) 30%, rgba(21,94,239,0.25) 60%, rgba(244,248,255,0.95) 100%)",
-          }}
-        />
-        {/* Circular processing graphic */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="relative h-[200px] w-[200px]">
+          {/* Processing Graphic */}
+          <div className="relative mt-8 flex flex-col items-center">
             <Image
               src="/images/hero-circle-graphic.png"
-              alt="Processing indicator"
-              fill
-              className="object-contain"
+              alt="Processing circle graphic"
+              width={400}
+              height={400}
+              className="relative z-[2]"
             />
-            <div className="absolute bottom-[-30px] left-1/2 -translate-x-1/2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-xs font-medium text-[#12B76A] shadow-sm">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#12B76A]" />
+            {/* Processing Label */}
+            <div className="relative z-[2] mt-3 flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-[#12B76A]" />
+              <span className="text-[14px] font-medium text-[#344054]">
                 Processing
               </span>
             </div>
@@ -139,11 +199,16 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* Enterprise trust text */}
-      <div className="bg-[#F4F8FF] py-4 text-center">
-        <p className="text-sm text-[#475467]">
-          Built for enterprise scale and trust
-        </p>
+      {/* Watercolor Background */}
+      <div className="absolute bottom-[-43px] left-0 z-[1] w-full">
+        <Image
+          src="/images/hero-watercolor-bg.png"
+          alt=""
+          width={1920}
+          height={600}
+          className="h-auto w-full object-cover"
+          priority
+        />
       </div>
     </section>
   );

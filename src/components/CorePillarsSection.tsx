@@ -1,90 +1,273 @@
-import Image from "next/image";
+/* ------------------------------------------------------------------ */
+/*  Icon components for each pillar                                     */
+/* ------------------------------------------------------------------ */
 
-const pillars = [
+function LeadRoutingIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path d="M10 2L14 6H11V12H9V6H6L10 2Z" fill="#155EEF" />
+      <path d="M4 14H16V16H4V14Z" fill="#155EEF" />
+      <path d="M6 10L4 12H8L6 10Z" fill="#155EEF" opacity="0.5" />
+      <path d="M14 10L16 12H12L14 10Z" fill="#155EEF" opacity="0.5" />
+    </svg>
+  );
+}
+
+function AutomatedSequencesIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <rect x="2" y="4" width="16" height="3" rx="1.5" fill="#155EEF" />
+      <rect x="2" y="9" width="12" height="3" rx="1.5" fill="#155EEF" opacity="0.6" />
+      <rect x="2" y="14" width="8" height="3" rx="1.5" fill="#155EEF" opacity="0.3" />
+    </svg>
+  );
+}
+
+function RealTimeInsightsIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path d="M2 16L6 10L10 13L14 6L18 4" stroke="#155EEF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="6" cy="10" r="1.5" fill="#155EEF" />
+      <circle cx="10" cy="13" r="1.5" fill="#155EEF" />
+      <circle cx="14" cy="6" r="1.5" fill="#155EEF" />
+    </svg>
+  );
+}
+
+function NativeIntegrationsIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <rect x="1" y="1" width="7" height="7" rx="2" fill="#155EEF" />
+      <rect x="12" y="1" width="7" height="7" rx="2" fill="#155EEF" opacity="0.6" />
+      <rect x="1" y="12" width="7" height="7" rx="2" fill="#155EEF" opacity="0.6" />
+      <rect x="12" y="12" width="7" height="7" rx="2" fill="#155EEF" opacity="0.3" />
+      <path d="M8 4.5H12" stroke="#155EEF" strokeWidth="1.5" />
+      <path d="M4.5 8V12" stroke="#155EEF" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+function EnterpriseSecurityIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path d="M10 1L3 5V10C3 14.4 6 17.5 10 19C14 17.5 17 14.4 17 10V5L10 1Z" fill="#155EEF" opacity="0.15" />
+      <path d="M10 1L3 5V10C3 14.4 6 17.5 10 19C14 17.5 17 14.4 17 10V5L10 1Z" stroke="#155EEF" strokeWidth="1.5" strokeLinejoin="round" />
+      <path d="M7 10L9 12L13 8" stroke="#155EEF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Shared arrow icon (inverted — blue arrow on blue circle)            */
+/* ------------------------------------------------------------------ */
+
+function ArrowCircleInverted() {
+  return (
+    <span
+      className="ml-2 flex shrink-0 items-center justify-center rounded-full"
+      style={{
+        width: 28,
+        height: 28,
+        backgroundColor: "rgb(21, 94, 239)",
+      }}
+    >
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 16 16"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path
+          d="M3.33337 8H12.6667"
+          stroke="white"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M8.66663 4L12.6666 8L8.66663 12"
+          stroke="white"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </span>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Card data                                                           */
+/* ------------------------------------------------------------------ */
+
+interface PillarCard {
+  readonly icon: React.ReactNode;
+  readonly title: string;
+  readonly description: string;
+}
+
+const PILLAR_CARDS: readonly PillarCard[] = [
   {
+    icon: <LeadRoutingIcon />,
     title: "Instant Lead Routing",
     description:
       "Routes qualified leads to the right representative in seconds.",
-    icon: "/images/agent-icon-1.png",
   },
   {
+    icon: <AutomatedSequencesIcon />,
     title: "Automated Sequences",
     description:
       "Omnichannel workflows engage prospects 24/7 while reps close.",
-    icon: "/images/agent-icon-2.png",
   },
   {
+    icon: <RealTimeInsightsIcon />,
     title: "Real-Time Insights",
     description:
       "Live metrics show replies and bookings, driving quick optimization.",
-    icon: "/images/agent-icon-3.png",
   },
   {
+    icon: <NativeIntegrationsIcon />,
     title: "Native Integrations",
     description:
       "Bidirectional CRM and Slack sync keeps data clean, actionable.",
-    icon: "/images/agent-icon-4.png",
   },
   {
+    icon: <EnterpriseSecurityIcon />,
     title: "Enterprise-Grade Security",
     description:
-      "SOC 2-Type II, GDPR-ready—your data stays safe always.",
-    icon: "/images/agent-icon-5.png",
+      "SOC 2-Type II, GDPR-ready\u2014your data stays safe always.",
   },
-  {
-    title: "Scalable Architecture",
-    description:
-      "Built to grow with your team—from startup to enterprise scale.",
-    icon: "/images/agent-icon-6.png",
-  },
-] as const;
+];
 
-export function CorePillarsSection() {
+/* ------------------------------------------------------------------ */
+/*  Feature card component                                              */
+/* ------------------------------------------------------------------ */
+
+function FeatureCard({ card }: { readonly card: PillarCard }) {
   return (
-    <section className="bg-[#F9FAFB] py-20">
-      <div className="mx-auto max-w-[1200px] px-6">
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[280px_1fr]">
-          {/* Left: Heading + CTA */}
-          <div className="flex flex-col items-start">
-            <h2 className="text-[36px] font-semibold leading-[1.2] tracking-[-0.72px] text-[#0C111D]">
-              Core Pillars of Omni SDR
-            </h2>
-            <a
-              href="#"
-              className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#155EEF] px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-[#1350D4]"
+    <div
+      className="flex flex-col bg-white"
+      style={{
+        borderRadius: "20px",
+        padding: "20px 25px",
+        minHeight: 241,
+      }}
+    >
+      {/* Icon container */}
+      <div
+        className="flex items-center justify-center"
+        style={{
+          width: 53,
+          height: 53,
+          backgroundColor: "rgb(244, 248, 255)",
+          borderRadius: "4px",
+          marginBottom: 40,
+        }}
+      >
+        {card.icon}
+      </div>
+
+      {/* Text */}
+      <div className="flex flex-col" style={{ gap: "10px" }}>
+        <h6
+          style={{
+            fontSize: "20px",
+            fontWeight: 600,
+            color: "rgb(25, 26, 28)",
+            lineHeight: "26px",
+            letterSpacing: "-0.4px",
+            margin: 0,
+          }}
+        >
+          {card.title}
+        </h6>
+        <p
+          style={{
+            fontSize: "14px",
+            fontWeight: 500,
+            color: "rgb(71, 84, 103)",
+            lineHeight: "20px",
+            margin: 0,
+          }}
+        >
+          {card.description}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Main export                                                        */
+/* ------------------------------------------------------------------ */
+
+export default function CorePillarsSection() {
+  return (
+    <section
+      className="flex w-full justify-center bg-[#F4F8FF]"
+      style={{ padding: "60px 0px" }}
+    >
+      <div
+        className="grid w-full max-w-[1150px]"
+        style={{
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: "20px",
+          padding: "60px 20px 70px",
+        }}
+      >
+        {/* Title cell */}
+        <div
+          className="flex flex-col"
+          style={{
+            gap: "30px",
+            padding: "10px 0px 20px 2px",
+            borderRadius: "20px",
+          }}
+        >
+          {/* CTA button — white variant */}
+          <a
+            href="#"
+            className="inline-flex items-center rounded-[1000px] bg-white py-1 pr-1 pl-5 no-underline"
+            style={{
+              height: 36,
+              width: 136.578,
+              boxShadow: "rgba(157, 186, 227, 0.08) 0px 2px 8px 0px",
+            }}
+          >
+            <span
+              style={{
+                fontSize: "16px",
+                fontWeight: 600,
+                color: "rgb(5, 5, 5)",
+                letterSpacing: "-0.32px",
+                lineHeight: "25.6px",
+              }}
             >
               Get Started
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path d="M6 12L10 8L6 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </a>
-          </div>
+            </span>
+            <ArrowCircleInverted />
+          </a>
 
-          {/* Right: 2x3 grid of cards */}
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {pillars.map((pillar) => (
-              <div
-                key={pillar.title}
-                className="rounded-2xl border border-[#E4E7EC] bg-white p-6"
-              >
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#F4F8FF]">
-                  <Image
-                    src={pillar.icon}
-                    alt={pillar.title}
-                    width={24}
-                    height={24}
-                  />
-                </div>
-                <h3 className="mb-2 text-lg font-semibold text-[#0C111D]">
-                  {pillar.title}
-                </h3>
-                <p className="text-sm leading-[1.6] text-[#475467]">
-                  {pillar.description}
-                </p>
-              </div>
-            ))}
-          </div>
+          {/* Heading */}
+          <h2
+            style={{
+              fontSize: "37.6px",
+              fontWeight: 700,
+              color: "rgb(25, 26, 28)",
+              lineHeight: "45.12px",
+              letterSpacing: "-0.752px",
+              margin: 0,
+            }}
+          >
+            Core Pillars of Omni SDR
+          </h2>
         </div>
+
+        {/* 5 feature cards */}
+        {PILLAR_CARDS.map((card) => (
+          <FeatureCard key={card.title} card={card} />
+        ))}
       </div>
     </section>
   );

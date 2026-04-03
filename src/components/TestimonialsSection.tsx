@@ -1,196 +1,228 @@
-"use client";
-
 import Image from "next/image";
-import { useState, useCallback } from "react";
 
-interface Testimonial {
-  quote: string;
-  name: string;
-  role: string;
-  image: string;
+/* ------------------------------------------------------------------ */
+/*  Shared sub-components                                              */
+/* ------------------------------------------------------------------ */
+
+function ArrowCircle() {
+  return (
+    <span className="flex items-center justify-center" style={{ width: 28, height: 28 }}>
+      <span
+        className="flex items-center justify-center"
+        style={{
+          width: 12,
+          height: 12,
+          borderRadius: "50%",
+          backgroundColor: "rgb(255, 255, 255)",
+        }}
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path
+            d="M 9 3.333 L 13.667 8 L 9 12.667 M 2.333 8 L 13.333 8"
+            stroke="#155EEF"
+            strokeWidth="1.33"
+            strokeMiterlimit="10"
+          />
+        </svg>
+      </span>
+    </span>
+  );
 }
 
-const testimonials: Testimonial[] = [
+/* ------------------------------------------------------------------ */
+/*  Data                                                                */
+/* ------------------------------------------------------------------ */
+
+interface Testimonial {
+  readonly image: string;
+  readonly quote: string;
+  readonly name: string;
+  readonly role: string;
+}
+
+const TESTIMONIALS: readonly Testimonial[] = [
   {
+    image: "/images/person-man-suit.jpg",
     quote:
       "Switching from manual outreach to Omni SDR was like upgrading from a bicycle to a bullet train. My team now books meetings while we sleep!",
     name: "James R.",
     role: "Founder of LeadFlow",
-    image: "/images/person-man-suit.jpg",
   },
   {
+    image: "/images/person-woman-smiling.jpg",
     quote:
       "What used to take me an entire week is now done before my coffee gets cold. Omni SDR is a no-brainer.",
     name: "Samantha K.",
     role: "Growth Lead at BrightWave",
-    image: "/images/person-woman-smiling.jpg",
   },
   {
+    image: "/images/person-man-glasses.jpg",
     quote:
       "Before Omni SDR, my inbox was chaos. Now, AI handles the follow-ups and I only talk to people ready to buy.",
     name: "Daniel Ming",
     role: "Account Executive at FinEdge",
-    image: "/images/reviewer-1.jpg",
   },
 ];
 
-function ArrowLeftIcon() {
-  return (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
-      <path
-        d="M12.5 15L7.5 10L12.5 5"
-        stroke="currentColor"
-        strokeWidth="1.67"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
+/* ------------------------------------------------------------------ */
+/*  TestimonialCard                                                     */
+/* ------------------------------------------------------------------ */
 
-function ArrowRightIcon() {
+function TestimonialCard({ testimonial }: { readonly testimonial: Testimonial }) {
   return (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
+    <div
+      className="flex flex-col"
+      style={{
+        backgroundColor: "rgb(255, 255, 255)",
+        borderRadius: 20,
+        padding: 10,
+        width: 363,
+        maxWidth: "100%",
+        gap: 10,
+      }}
     >
-      <path
-        d="M7.5 15L12.5 10L7.5 5"
-        stroke="currentColor"
-        strokeWidth="1.67"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function TestimonialCard({ quote, name, role, image }: Testimonial) {
-  return (
-    <div className="flex flex-col rounded-2xl border border-[#E4E7EC] bg-white overflow-hidden">
-      <div className="relative aspect-[4/3] w-full">
+      {/* Portrait */}
+      <div
+        className="relative overflow-hidden"
+        style={{ borderRadius: 14, height: 380 }}
+      >
         <Image
-          src={image}
-          alt={`Portrait of ${name}`}
+          src={testimonial.image}
+          alt={testimonial.name}
           fill
           className="object-cover"
-          sizes="(max-width: 768px) 100vw, 33vw"
         />
       </div>
-      <div className="flex flex-col gap-3 p-6">
-        <p className="text-base leading-relaxed text-[#344054]">
-          &ldquo;{quote}&rdquo;
-        </p>
-        <div>
-          <p className="font-semibold text-[#0C111D]">{name}</p>
-          <p className="text-sm text-[#667085]">{role}</p>
+
+      {/* Quote */}
+      <div className="flex flex-col gap-4 px-3 pt-2 pb-4">
+        <h5
+          style={{
+            fontSize: 22.6,
+            fontWeight: 500,
+            color: "rgb(12, 17, 29)",
+            lineHeight: "31.64px",
+            letterSpacing: "-0.452px",
+            margin: 0,
+          }}
+        >
+          &ldquo;{testimonial.quote}&rdquo;
+        </h5>
+
+        {/* Person Info */}
+        <div className="flex flex-col gap-1">
+          <h6
+            style={{
+              fontSize: 20,
+              fontWeight: 600,
+              color: "rgb(12, 17, 29)",
+              lineHeight: "26px",
+              letterSpacing: "-0.4px",
+              margin: 0,
+            }}
+          >
+            {testimonial.name}
+          </h6>
+          <p
+            style={{
+              fontSize: 16,
+              fontWeight: 500,
+              color: "rgb(52, 64, 84)",
+              lineHeight: "25.6px",
+              letterSpacing: "-0.32px",
+              margin: 0,
+            }}
+          >
+            {testimonial.role}
+          </p>
         </div>
       </div>
     </div>
   );
 }
 
+/* ------------------------------------------------------------------ */
+/*  Main Component                                                      */
+/* ------------------------------------------------------------------ */
+
 export default function TestimonialsSection() {
-  const [startIndex, setStartIndex] = useState(0);
-
-  const handlePrev = useCallback(() => {
-    setStartIndex((prev) =>
-      prev === 0 ? testimonials.length - 1 : prev - 1
-    );
-  }, []);
-
-  const handleNext = useCallback(() => {
-    setStartIndex((prev) =>
-      prev === testimonials.length - 1 ? 0 : prev + 1
-    );
-  }, []);
-
-  // Build the visible set by rotating from startIndex
-  const visibleCards = Array.from({ length: testimonials.length }, (_, i) => {
-    const idx = (startIndex + i) % testimonials.length;
-    return testimonials[idx];
-  });
-
   return (
-    <section className="py-20 bg-[#F9FAFB]">
-      <div className="max-w-7xl mx-auto px-6">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
-          <div className="max-w-xl">
-            <h2 className="text-3xl md:text-4xl font-bold text-[#0C111D] mb-4">
+    <section
+      className="flex w-full justify-center"
+      style={{
+        backgroundColor: "rgb(244, 248, 255)",
+        padding: "70px 20px 40px",
+      }}
+    >
+      <div
+        className="flex w-full flex-col"
+        style={{ maxWidth: 1150, gap: 47 }}
+      >
+        {/* ---- Header Row ---- */}
+        <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+          <div className="flex flex-col" style={{ gap: 8 }}>
+            <h2
+              style={{
+                fontSize: 37.6,
+                fontWeight: 700,
+                color: "rgb(24, 34, 48)",
+                lineHeight: "45.12px",
+                letterSpacing: "-0.752px",
+              }}
+            >
               Teams trust Omni SDR
             </h2>
-            <p className="text-base md:text-lg text-[#344054] leading-relaxed">
+            <p
+              style={{
+                fontSize: 16,
+                fontWeight: 500,
+                color: "rgb(71, 84, 103)",
+                lineHeight: "25.6px",
+                letterSpacing: "-0.32px",
+                maxWidth: 681,
+              }}
+            >
               Real results&mdash;from startups to enterprises&mdash;showing that
               smarter automation not only pays for itself but drives lasting
               growth.
             </p>
           </div>
-          <div className="flex items-center gap-4">
-            <a
-              href="#get-started"
-              className="inline-flex items-center justify-center rounded-lg bg-[#155EEF] px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-[#1249C4]"
+
+          {/* Get Started button */}
+          <a
+            href="#"
+            className="flex shrink-0 items-center no-underline"
+            style={{
+              borderRadius: 1000,
+              padding: "4px 4px 4px 12px",
+              height: 36,
+              backgroundColor: "rgb(21, 94, 239)",
+            }}
+          >
+            <span
+              style={{
+                fontSize: 16,
+                fontWeight: 600,
+                color: "rgb(255, 255, 255)",
+                lineHeight: "25.6px",
+                letterSpacing: "-0.32px",
+                paddingLeft: 2,
+              }}
             >
               Get Started
-            </a>
-            {/* Navigation arrows */}
-            <div className="hidden md:flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handlePrev}
-                aria-label="Previous testimonial"
-                className="flex items-center justify-center w-10 h-10 rounded-full border border-[#E4E7EC] bg-white text-[#344054] transition-colors hover:bg-[#F4F8FF] hover:border-[#155EEF] hover:text-[#155EEF]"
-              >
-                <ArrowLeftIcon />
-              </button>
-              <button
-                type="button"
-                onClick={handleNext}
-                aria-label="Next testimonial"
-                className="flex items-center justify-center w-10 h-10 rounded-full border border-[#E4E7EC] bg-white text-[#344054] transition-colors hover:bg-[#F4F8FF] hover:border-[#155EEF] hover:text-[#155EEF]"
-              >
-                <ArrowRightIcon />
-              </button>
-            </div>
-          </div>
+            </span>
+            <ArrowCircle />
+          </a>
         </div>
 
-        {/* Cards grid - 3 columns on desktop, horizontal scroll on mobile */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {visibleCards.map((testimonial) => (
-            <TestimonialCard key={testimonial.name} {...testimonial} />
+        {/* ---- Cards ---- */}
+        <div
+          className="flex flex-col gap-6 md:flex-row"
+          style={{ gap: 47, padding: "0 5px" }}
+        >
+          {TESTIMONIALS.map((t) => (
+            <TestimonialCard key={t.name} testimonial={t} />
           ))}
-        </div>
-
-        {/* Mobile navigation arrows */}
-        <div className="flex md:hidden items-center justify-center gap-3 mt-8">
-          <button
-            type="button"
-            onClick={handlePrev}
-            aria-label="Previous testimonial"
-            className="flex items-center justify-center w-10 h-10 rounded-full border border-[#E4E7EC] bg-white text-[#344054] transition-colors hover:bg-[#F4F8FF] hover:border-[#155EEF] hover:text-[#155EEF]"
-          >
-            <ArrowLeftIcon />
-          </button>
-          <button
-            type="button"
-            onClick={handleNext}
-            aria-label="Next testimonial"
-            className="flex items-center justify-center w-10 h-10 rounded-full border border-[#E4E7EC] bg-white text-[#344054] transition-colors hover:bg-[#F4F8FF] hover:border-[#155EEF] hover:text-[#155EEF]"
-          >
-            <ArrowRightIcon />
-          </button>
         </div>
       </div>
     </section>

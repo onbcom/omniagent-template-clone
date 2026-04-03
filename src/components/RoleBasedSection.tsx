@@ -1,339 +1,426 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 
-const TABS = [
-  "Sales Development (SDRs)",
-  "Founders & Startups",
-  "Account Executives",
-  "Marketing Teams",
-  "RevOps",
-] as const;
+/* ------------------------------------------------------------------ */
+/*  Data                                                                */
+/* ------------------------------------------------------------------ */
 
-type TabKey = (typeof TABS)[number];
-
-interface TabContent {
-  heading: string;
-  description: string;
+interface RoleTab {
+  readonly label: string;
+  readonly heading: string;
+  readonly description: string;
 }
 
-const TAB_CONTENT: Record<TabKey, TabContent> = {
-  "Sales Development (SDRs)": {
+const ROLE_TABS: readonly RoleTab[] = [
+  {
+    label: "Sales Development (SDRs)",
     heading: "Stop hunting for leads. Start closing them.",
     description:
       "Omni Agent automates the entire top-of-funnel by building verified lead lists matching your exact ICP in seconds, not hours. It then crafts personalized outreach at scale based on real-time prospect signals and manages multi-channel follow-ups, nurturing cold leads until they are ready to book a meeting.",
   },
-  "Founders & Startups": {
-    heading: "Focus on building. Let AI handle pipeline.",
-    description:
-      "As a founder, your time is your scarcest resource. Omni Agent automates outbound prospecting, lead qualification, and meeting scheduling so you can focus on product and fundraising while your pipeline grows on autopilot.",
-  },
-  "Account Executives": {
-    heading: "Close more deals with less busywork.",
-    description:
-      "Omni Agent keeps your pipeline warm by surfacing buying signals, automating follow-ups, and delivering enriched account intelligence directly to your workflow so you can spend more time selling and less time researching.",
-  },
-  "Marketing Teams": {
-    heading: "Turn intent data into booked meetings.",
-    description:
-      "Omni Agent bridges the gap between marketing and sales by converting inbound signals and campaign engagement into qualified pipeline. Automatically route, enrich, and activate leads the moment they show intent.",
-  },
-  RevOps: {
-    heading: "Unified pipeline intelligence at scale.",
-    description:
-      "Omni Agent gives RevOps teams complete visibility into prospecting activity, conversion metrics, and pipeline health. Automate data hygiene, lead routing, and reporting to keep your revenue engine running smoothly.",
-  },
-};
-
-const STEPS = [
   {
-    number: "01",
-    title: "Prospect",
-    subtitle: "Find qualified leads",
+    label: "Founders & Startups",
+    heading: "Scale outreach without scaling headcount.",
     description:
-      "AI pulls fresh contacts that match your ICP and enriches them with live firmographic data.",
+      "As a founder, your time is your scarcest resource. Omni Agent handles prospecting, personalization, and follow-ups so you can focus on product and fundraising\u2014while your pipeline grows on autopilot.",
   },
   {
-    number: "02",
-    title: "Personalize",
-    subtitle: "Craft tailored outreach",
+    label: "Account Executives",
+    heading: "Close more. Research less.",
     description:
-      "Each message is dynamically written using real-time signals like funding rounds, tech stack, and hiring activity.",
+      "Omni Agent pre-qualifies leads and surfaces buying signals so you walk into every call prepared. Spend less time researching and more time closing high-value deals.",
   },
   {
-    number: "03",
-    title: "Book",
-    subtitle: "Schedule meetings automatically",
+    label: "Marketing Teams",
+    heading: "Align outbound with inbound\u2014automatically.",
     description:
-      "Multi-channel follow-ups nurture leads until they are ready to book, syncing directly to your calendar.",
+      "Bridge the gap between marketing campaigns and sales outreach. Omni Agent ensures every MQL gets personalized follow-up that matches your brand voice and campaign messaging.",
+  },
+  {
+    label: "RevOps",
+    heading: "One dashboard. Full pipeline visibility.",
+    description:
+      "Get unified reporting across outbound channels, track conversion at every stage, and optimize your revenue engine with data-driven insights\u2014all without manual spreadsheet wrangling.",
   },
 ];
 
-function StatusPill({ label, variant }: { label: string; variant: string }) {
-  const styles: Record<string, string> = {
-    engaged: "bg-[#ECFDF3] text-[#027A48]",
-    synced: "bg-[#EFF8FF] text-[#175CD3]",
-    pending: "bg-[#FFFAEB] text-[#B54708]",
-    queued: "bg-[#F2F4F7] text-[#344054]",
-    archived: "bg-[#F2F4F7] text-[#667085]",
-  };
+/* ------------------------------------------------------------------ */
+/*  Mockup UI for SDRs tab (lead list table)                            */
+/* ------------------------------------------------------------------ */
 
-  return (
-    <span
-      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${styles[variant] ?? styles.queued}`}
-    >
-      {label}
-    </span>
-  );
+interface LeadRow {
+  readonly name: string;
+  readonly status: string;
+  readonly statusColor: string;
+  readonly signals: readonly string[];
+  readonly signalColors: readonly string[];
 }
 
-function SDRMockupCard() {
+const LEAD_ROWS: readonly LeadRow[] = [
+  {
+    name: "Edwin Adenike",
+    status: "Engaged",
+    statusColor: "rgb(94, 195, 105)",
+    signals: ["Series A ($12M)", "Active Category", "HubSpot (BuiltWith)"],
+    signalColors: [
+      "rgb(83, 88, 97)",
+      "rgb(83, 88, 97)",
+      "rgb(83, 88, 97)",
+    ],
+  },
+  {
+    name: "David Oshodi",
+    status: "Synced",
+    statusColor: "rgb(0, 78, 234)",
+    signals: ["Launch (Product Hunt)", "Hiring SDRs (LinkedIn)"],
+    signalColors: ["rgb(83, 88, 97)", "rgb(21, 111, 238)"],
+  },
+  {
+    name: "Scanning",
+    status: "Pending Sync",
+    statusColor: "rgb(53, 62, 114)",
+    signals: [],
+    signalColors: [],
+  },
+];
+
+function LeadListMockup() {
   return (
-    <div className="w-full rounded-xl border border-[#E4E7EC] bg-white shadow-lg overflow-hidden">
-      {/* Table header */}
-      <div className="grid grid-cols-[1.5fr_1fr_1.5fr_1fr] gap-2 border-b border-[#E4E7EC] bg-[#F9FAFB] px-4 py-2.5 text-xs font-medium text-[#667085]">
-        <span>Name</span>
-        <span>Scanning</span>
-        <span>Signals</span>
-        <span>Status</span>
+    <div
+      className="overflow-hidden"
+      style={{
+        backgroundColor: "rgba(255, 255, 255, 0.76)",
+        borderRadius: 13.58,
+        width: "100%",
+        maxWidth: 447,
+        padding: "12px 16px",
+      }}
+    >
+      {/* Header */}
+      <h6
+        style={{
+          fontSize: 12.8,
+          fontWeight: 500,
+          color: "rgb(23, 23, 23)",
+          lineHeight: "16.64px",
+          letterSpacing: "-0.256px",
+          margin: "0 0 8px",
+        }}
+      >
+        Automated Lead List Building
+      </h6>
+
+      {/* Table Header */}
+      <div
+        className="flex items-center gap-6 border-b pb-1"
+        style={{ borderColor: "rgba(228,231,236,0.5)" }}
+      >
+        <span
+          className="flex-1"
+          style={{
+            fontSize: 9,
+            fontWeight: 600,
+            color: "rgb(113, 118, 128)",
+            lineHeight: "11.27px",
+          }}
+        >
+          Name
+        </span>
+        <span
+          style={{
+            fontSize: 9,
+            fontWeight: 600,
+            color: "rgb(113, 118, 128)",
+            lineHeight: "14.23px",
+            width: 140,
+          }}
+        >
+          Signals
+        </span>
+        <span
+          style={{
+            fontSize: 9,
+            fontWeight: 600,
+            color: "rgb(113, 118, 128)",
+            lineHeight: "14.23px",
+            width: 70,
+          }}
+        >
+          Status
+        </span>
       </div>
 
-      {/* Row 1 */}
-      <div className="grid grid-cols-[1.5fr_1fr_1.5fr_1fr] gap-2 items-center border-b border-[#E4E7EC] px-4 py-3 text-sm">
-        <div className="flex items-center gap-2">
-          <div className="h-7 w-7 rounded-full bg-[#F4EBFF] flex items-center justify-center text-xs font-semibold text-[#7F56D9]">
-            EA
-          </div>
-          <span className="font-medium text-[#101828]">Edwin Adenike</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <div className="h-1.5 w-1.5 rounded-full bg-[#12B76A] animate-pulse" />
-          <span className="text-xs text-[#667085]">Active</span>
-        </div>
-        <div className="flex flex-wrap gap-1">
-          <span className="rounded bg-[#F0F9FF] px-1.5 py-0.5 text-[10px] text-[#026AA2]">
-            Series A ($12M)
+      {/* Rows */}
+      {LEAD_ROWS.map((row) => (
+        <div
+          key={row.name}
+          className="flex items-center gap-6 border-b py-2"
+          style={{ borderColor: "rgba(228,231,236,0.3)" }}
+        >
+          <span
+            className="flex-1"
+            style={{
+              fontSize: 11,
+              fontWeight: 500,
+              color: "rgb(24, 29, 39)",
+              lineHeight: "15.82px",
+            }}
+          >
+            {row.name}
           </span>
-          <span className="rounded bg-[#FFF6ED] px-1.5 py-0.5 text-[10px] text-[#C4320A]">
-            HubSpot (BuiltWith)
-          </span>
-        </div>
-        <StatusPill label="Engaged" variant="engaged" />
-      </div>
-
-      {/* Row 2 */}
-      <div className="grid grid-cols-[1.5fr_1fr_1.5fr_1fr] gap-2 items-center border-b border-[#E4E7EC] px-4 py-3 text-sm">
-        <div className="flex items-center gap-2">
-          <div className="h-7 w-7 rounded-full bg-[#D1FADF] flex items-center justify-center text-xs font-semibold text-[#027A48]">
-            DO
-          </div>
-          <span className="font-medium text-[#101828]">David Oshodi</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <div className="h-1.5 w-1.5 rounded-full bg-[#12B76A] animate-pulse" />
-          <span className="text-xs text-[#667085]">Active</span>
-        </div>
-        <div className="flex flex-wrap gap-1">
-          <span className="rounded bg-[#EFF8FF] px-1.5 py-0.5 text-[10px] text-[#175CD3]">
-            Hiring SDRs (LinkedIn)
-          </span>
-        </div>
-        <StatusPill label="Synced" variant="synced" />
-      </div>
-
-      {/* Row 3 - partial */}
-      <div className="grid grid-cols-[1.5fr_1fr_1.5fr_1fr] gap-2 items-center border-b border-[#E4E7EC] px-4 py-3 text-sm opacity-60">
-        <div className="flex items-center gap-2">
-          <div className="h-7 w-7 rounded-full bg-[#FEF3F2] flex items-center justify-center text-xs font-semibold text-[#B42318]">
-            JK
-          </div>
-          <span className="font-medium text-[#101828]">Jane Kim</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <div className="h-1.5 w-1.5 rounded-full bg-[#F79009]" />
-          <span className="text-xs text-[#667085]">Pending</span>
-        </div>
-        <div className="flex flex-wrap gap-1">
-          <span className="rounded bg-[#F2F4F7] px-1.5 py-0.5 text-[10px] text-[#344054]">
-            Evaluating tools
-          </span>
-        </div>
-        <StatusPill label="Pending Sync" variant="pending" />
-      </div>
-
-      {/* Stats bar */}
-      <div className="flex items-center justify-between bg-[#F9FAFB] px-4 py-3 border-b border-[#E4E7EC]">
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-1.5">
-            <div className="h-2 w-2 rounded-full bg-[#12B76A]" />
-            <span className="text-xs text-[#344054]">
-              Opened{" "}
-              <span className="font-semibold text-[#101828]">90.24%</span>
-            </span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="h-2 w-2 rounded-full bg-[#155EEF]" />
-            <span className="text-xs text-[#344054]">
-              Replied{" "}
-              <span className="font-semibold text-[#101828]">32.80%</span>
-            </span>
-          </div>
-        </div>
-        <div className="flex items-center gap-1">
-          <StatusPill label="Queued" variant="queued" />
-          <StatusPill label="Archived" variant="archived" />
-        </div>
-      </div>
-
-      {/* Email preview */}
-      <div className="px-4 py-3">
-        <div className="rounded-lg border border-[#E4E7EC] bg-white p-3">
-          <div className="mb-1.5 flex items-center gap-2">
-            <div className="h-5 w-5 rounded bg-[#155EEF] flex items-center justify-center">
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="white"
-                strokeWidth="2"
+          <div className="flex flex-col gap-0.5" style={{ width: 140 }}>
+            {row.signals.map((signal, i) => (
+              <span
+                key={signal}
+                style={{
+                  fontSize: 10,
+                  fontWeight: 500,
+                  color: row.signalColors[i],
+                  lineHeight: "13.11px",
+                }}
               >
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                <polyline points="22,6 12,13 2,6" />
-              </svg>
-            </div>
-            <span className="text-xs font-medium text-[#344054]">
-              Email Preview
-            </span>
+                {signal}
+              </span>
+            ))}
           </div>
-          <p className="text-xs leading-relaxed text-[#667085]">
-            Hi{" "}
-            <span className="rounded bg-[#EFF8FF] px-1 text-[#175CD3]">
-              [Contact: First Name]
-            </span>
-            , I noticed{" "}
-            <span className="rounded bg-[#EFF8FF] px-1 text-[#175CD3]">
-              [Company Name]
-            </span>{" "}
-            recently raised a Series A &mdash; congrats! We help teams like
-            yours scale outbound without adding headcount...
-          </p>
+          <span
+            style={{
+              fontSize: 9,
+              fontWeight: 500,
+              color: row.statusColor,
+              lineHeight: "14.23px",
+              width: 70,
+            }}
+          >
+            {row.status}
+          </span>
+        </div>
+      ))}
+
+      {/* Stats row */}
+      <div className="mt-3 flex gap-6">
+        <div className="flex flex-col gap-0.5">
+          <span
+            style={{
+              fontSize: 9,
+              fontWeight: 400,
+              color: "rgb(102, 112, 133)",
+              lineHeight: "10.8px",
+            }}
+          >
+            Opened
+          </span>
+          <span
+            style={{
+              fontSize: 15,
+              fontWeight: 700,
+              color: "rgb(24, 34, 48)",
+              lineHeight: "18px",
+            }}
+          >
+            90.24%
+          </span>
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <span
+            style={{
+              fontSize: 9,
+              fontWeight: 400,
+              color: "rgb(102, 112, 133)",
+              lineHeight: "10.8px",
+            }}
+          >
+            Replied
+          </span>
+          <span
+            style={{
+              fontSize: 15,
+              fontWeight: 700,
+              color: "rgb(24, 34, 48)",
+              lineHeight: "18px",
+            }}
+          >
+            32.80%
+          </span>
         </div>
       </div>
     </div>
   );
 }
 
-export default function RoleBasedSection() {
-  const [activeTab, setActiveTab] = useState<TabKey>("Sales Development (SDRs)");
+/* ------------------------------------------------------------------ */
+/*  Generic mockup placeholder for non-SDR tabs                         */
+/* ------------------------------------------------------------------ */
 
-  const content = TAB_CONTENT[activeTab];
+function GenericMockup({ heading }: { readonly heading: string }) {
+  return (
+    <div
+      className="flex items-center justify-center"
+      style={{
+        backgroundColor: "rgba(255, 255, 255, 0.1)",
+        borderRadius: 20,
+        width: "100%",
+        height: 400,
+        maxWidth: 1100,
+      }}
+    >
+      <div className="flex flex-col items-center gap-4 p-8">
+        <Image
+          src="/images/dashboard-mockup.png"
+          alt="Dashboard mockup"
+          width={800}
+          height={400}
+          className="rounded-xl object-contain opacity-80"
+          style={{ maxHeight: 350, width: "auto" }}
+        />
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Component                                                           */
+/* ------------------------------------------------------------------ */
+
+export default function RoleBasedSection() {
+  const [activeTab, setActiveTab] = useState(0);
+  const tab = ROLE_TABS[activeTab];
 
   return (
-    <section className="bg-white py-16 md:py-20">
-      <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
-        {/* Section heading */}
-        <h2 className="mb-10 text-center text-3xl font-semibold tracking-tight text-[#101828] md:text-4xl">
-          How Omni Agent drives growth for every role
-        </h2>
+    <section
+      className="flex w-full justify-center"
+      style={{ backgroundColor: "rgb(16, 24, 40)" }}
+    >
+      <div
+        className="overflow-clip"
+        style={{
+          width: 1200,
+          maxWidth: "100%",
+          borderRadius: 40,
+          backgroundColor: "rgb(244, 248, 255)",
+        }}
+      >
+        <div
+          className="flex flex-col items-center justify-center overflow-hidden"
+          style={{
+            backgroundColor: "rgb(16, 24, 40)",
+            padding: "70px 20px",
+            gap: 47,
+          }}
+        >
+          {/* ---- Header ---- */}
+          <div
+            className="flex w-full flex-col items-center"
+            style={{ maxWidth: 1150, padding: "0 20px" }}
+          >
+            <div className="flex w-full flex-col" style={{ gap: 8 }}>
+              {/* Title */}
+              <h2
+                style={{
+                  fontSize: 37.6,
+                  fontWeight: 700,
+                  color: "rgb(255, 255, 255)",
+                  lineHeight: "45.12px",
+                  letterSpacing: "-0.752px",
+                  margin: 0,
+                }}
+              >
+                How Omni Agent drives growth for every role
+              </h2>
 
-        {/* Tab bar */}
-        <div className="mb-10 flex flex-wrap justify-center gap-2">
-          {TABS.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                activeTab === tab
-                  ? "bg-[#155EEF] text-white"
-                  : "bg-[#F9FAFB] text-[#344054] hover:bg-[#F2F4F7]"
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
+              {/* Tab Row */}
+              <div className="mt-4 flex flex-wrap gap-0">
+                {ROLE_TABS.map((t, index) => (
+                  <button
+                    key={t.label}
+                    type="button"
+                    onClick={() => setActiveTab(index)}
+                    className="flex items-center border-none"
+                    style={{
+                      backgroundColor:
+                        index === activeTab
+                          ? "rgb(21, 94, 239)"
+                          : "transparent",
+                      borderRadius: 30,
+                      padding: "14px 20px",
+                      height: 54,
+                      gap: 6,
+                      cursor: "pointer",
+                      transition: "background-color 0.2s",
+                    }}
+                  >
+                    <h6
+                      style={{
+                        fontSize: 20,
+                        fontWeight: 600,
+                        color: "rgb(255, 255, 255)",
+                        lineHeight: "26px",
+                        letterSpacing: "-0.4px",
+                        margin: 0,
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {t.label}
+                    </h6>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
 
-        {/* Tab content */}
-        <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-2">
-          {/* Left: mockup or placeholder */}
-          <div>
-            {activeTab === "Sales Development (SDRs)" ? (
-              <div>
-                <h3 className="mb-4 text-xl font-semibold text-[#101828]">
-                  Automated Lead List Building
-                </h3>
-                <SDRMockupCard />
+          {/* ---- Image / Mockup Area ---- */}
+          <div
+            className="overflow-hidden"
+            style={{
+              borderRadius: 20,
+              width: 1100,
+              maxWidth: "100%",
+              minHeight: 400,
+            }}
+          >
+            {activeTab === 0 ? (
+              <div
+                className="flex items-center justify-center p-8"
+                style={{
+                  backgroundColor: "rgba(244, 248, 255, 0.05)",
+                  minHeight: 400,
+                }}
+              >
+                <LeadListMockup />
               </div>
             ) : (
-              <div className="flex aspect-[4/3] items-center justify-center rounded-xl border border-[#E4E7EC] bg-[#F9FAFB]">
-                <div className="text-center">
-                  <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[#EFF8FF]">
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="#155EEF"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <rect x="2" y="3" width="20" height="14" rx="2" />
-                      <line x1="8" y1="21" x2="16" y2="21" />
-                      <line x1="12" y1="17" x2="12" y2="21" />
-                    </svg>
-                  </div>
-                  <p className="text-sm font-medium text-[#344054]">
-                    {activeTab} Dashboard
-                  </p>
-                  <p className="mt-1 text-xs text-[#667085]">
-                    Interactive preview coming soon
-                  </p>
-                </div>
-              </div>
+              <GenericMockup heading={tab.heading} />
             )}
           </div>
 
-          {/* Right: text content */}
-          <div className="flex flex-col justify-center">
-            <h3 className="mb-4 text-2xl font-semibold text-[#101828]">
-              {content.heading}
+          {/* ---- Text Content ---- */}
+          <div className="flex flex-col" style={{ maxWidth: 1100, gap: 16 }}>
+            <h3
+              style={{
+                fontSize: 32.6,
+                fontWeight: 700,
+                color: "rgb(255, 255, 255)",
+                lineHeight: "39.12px",
+                letterSpacing: "-0.652px",
+                margin: 0,
+              }}
+            >
+              {tab.heading}
             </h3>
-            <p className="text-base leading-7 text-[#667085]">
-              {content.description}
+            <p
+              style={{
+                fontSize: 16,
+                fontWeight: 500,
+                color: "rgb(255, 255, 255)",
+                lineHeight: "22.4px",
+                letterSpacing: "-0.32px",
+                margin: 0,
+              }}
+            >
+              {tab.description}
             </p>
-          </div>
-        </div>
-
-        {/* 3-step flow */}
-        <div className="mt-20">
-          <p className="mb-8 text-center text-lg font-medium text-[#344054]">
-            Omni SDR prospects, personalizes, and books
-            meetings&mdash;automatically.
-          </p>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            {STEPS.map((step) => (
-              <div
-                key={step.number}
-                className="rounded-xl border border-[#E4E7EC] bg-[#F9FAFB] p-6"
-              >
-                <div className="mb-3 flex items-center gap-3">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#155EEF] text-xs font-bold text-white">
-                    {step.number}
-                  </span>
-                  <h4 className="text-lg font-semibold text-[#101828]">
-                    {step.title}
-                  </h4>
-                </div>
-                <p className="mb-2 text-sm font-medium text-[#344054]">
-                  {step.subtitle}
-                </p>
-                <p className="text-sm leading-relaxed text-[#667085]">
-                  {step.description}
-                </p>
-              </div>
-            ))}
           </div>
         </div>
       </div>

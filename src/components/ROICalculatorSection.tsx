@@ -1,360 +1,332 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { ChevronDown, Download, ArrowRight, Minus, Plus } from "lucide-react";
+import { useState } from "react";
 
-type ViewMode = "perRep" | "team";
-
-interface CurrencyOption {
-  symbol: string;
-  code: string;
-}
-
-const currencies: CurrencyOption[] = [
-  { symbol: "$", code: "USD" },
-  { symbol: "€", code: "EUR" },
-  { symbol: "£", code: "GBP" },
-  { symbol: "₹", code: "INR" },
-];
-
-interface CalculatorInputs {
-  weeklyProspectingHours: number;
-  hourlyWage: number;
-  numberOfSDRs: number;
-  meetingsPerRepMonth: number;
-  averageDealSize: number;
-  closeRate: number;
-  expectedUplift: number;
-  pricePerSeatMonth: number;
-}
-
-function computeResults(inputs: CalculatorInputs, mode: ViewMode) {
-  const multiplier = mode === "team" ? inputs.numberOfSDRs : 1;
-  const weeksPerYear = 52;
-  const hoursPerDay = 8;
-
-  // Prospecting automation saves ~80% of prospecting time
-  const prospectingAutomationRate = 0.8;
-  const prospectingHoursSavedPerYear =
-    inputs.weeklyProspectingHours * prospectingAutomationRate * weeksPerYear * multiplier;
-  const prospectingDaysSaved = Math.round(prospectingHoursSavedPerYear / hoursPerDay);
-  const prospectingSavings = prospectingHoursSavedPerYear * inputs.hourlyWage;
-
-  // Scheduling & admin saves ~20% of prospecting time
-  const schedulingAutomationRate = 0.2;
-  const schedulingHoursSavedPerYear =
-    inputs.weeklyProspectingHours * schedulingAutomationRate * weeksPerYear * multiplier;
-  const schedulingDaysSaved = Math.round(schedulingHoursSavedPerYear / hoursPerDay);
-  const schedulingSavings = schedulingHoursSavedPerYear * inputs.hourlyWage;
-
-  const totalSavings = prospectingSavings + schedulingSavings;
-
-  // Tool cost
-  const toolCostYear = inputs.pricePerSeatMonth * 12 * multiplier;
-
-  // Net savings
-  const netSavings = totalSavings - toolCostYear;
-
-  // ROI
-  const roi = toolCostYear > 0 ? ((totalSavings - toolCostYear) / toolCostYear) * 100 : 0;
-
-  // Payback period in months
-  const monthlySavings = totalSavings / 12;
-  const paybackMonths = monthlySavings > 0 ? (toolCostYear / monthlySavings) : 0;
-
-  // Three-year net
-  const threeYearNet = totalSavings * 3 - toolCostYear * 3;
-
-  return {
-    prospectingSavings,
-    prospectingDaysSaved,
-    schedulingSavings,
-    schedulingDaysSaved,
-    totalSavings,
-    toolCostYear,
-    netSavings,
-    roi,
-    paybackMonths,
-    threeYearNet,
-  };
-}
-
-function formatCurrency(value: number, symbol: string): string {
-  if (value >= 1_000_000) {
-    return `${symbol}${(value / 1_000_000).toFixed(1)}M`;
-  }
-  if (value >= 1_000) {
-    return `${symbol}${(value / 1_000).toFixed(1)}K`;
-  }
-  return `${symbol}${value.toFixed(0)}`;
-}
+/* ------------------------------------------------------------------ */
+/*  Main export — ROI Calculator (static mockup with toggle)            */
+/* ------------------------------------------------------------------ */
 
 export default function ROICalculatorSection() {
-  const [mode, setMode] = useState<ViewMode>("team");
-  const [currencyIndex, setCurrencyIndex] = useState(0);
-  const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
-  const [inputs, setInputs] = useState<CalculatorInputs>({
-    weeklyProspectingHours: 30,
-    hourlyWage: 35,
-    numberOfSDRs: 5,
-    meetingsPerRepMonth: 20,
-    averageDealSize: 5000,
-    closeRate: 25,
-    expectedUplift: 15,
-    pricePerSeatMonth: 399,
-  });
+  const [mode, setMode] = useState<"rep" | "team">("team");
+  const [hours, setHours] = useState(30);
 
-  const currency = currencies[currencyIndex];
-  const results = computeResults(inputs, mode);
+  // Derived values (simplified deterministic calc matching source defaults)
+  const prospectingSavings = Math.round((hours * 52 * 35 * 0.6) / 100) / 10;
+  const schedulingSavings = Math.round((hours * 52 * 35 * 0.15) / 100) / 10;
+  const totalSavings = Math.round((prospectingSavings + schedulingSavings) * 10) / 10;
+  const prospectingDays = Math.round(hours * 52 * 0.6 / 8);
+  const schedulingDays = Math.round(hours * 52 * 0.15 / 8);
 
-  const updateInput = useCallback(
-    <K extends keyof CalculatorInputs>(key: K, value: CalculatorInputs[K]) => {
-      setInputs((prev) => ({ ...prev, [key]: value }));
-    },
-    []
-  );
+  // Team multiplier
+  const teamMultiplier = mode === "team" ? 5 : 1;
+  const displaySavings = totalSavings * teamMultiplier;
+  const displayProspecting = prospectingSavings * teamMultiplier;
+  const displayScheduling = schedulingSavings * teamMultiplier;
+  const displayProspectingDays = prospectingDays * teamMultiplier;
+  const displaySchedulingDays = schedulingDays * teamMultiplier;
 
-  const stepHours = (delta: number) => {
-    updateInput(
-      "weeklyProspectingHours",
-      Math.max(1, Math.min(80, inputs.weeklyProspectingHours + delta))
-    );
-  };
+  // 3-year projections
+  const netSavings3yr = displaySavings * 3 - 23.9;
+  const roi = Math.round((displaySavings / 23.9) * 100);
+  const payback = Math.round((23.9 / displaySavings) * 12 * 10) / 10;
+
+  function formatK(n: number): string {
+    if (n >= 1000) return `$${(n / 1).toFixed(1)}K`;
+    if (n >= 100) return `$${n.toFixed(1)}K`;
+    return `$${n.toFixed(1)}K`;
+  }
 
   return (
-    <section id="roi-calculator" className="py-20 px-4" style={{ backgroundColor: "#F9FAFB" }}>
-      <div className="max-w-[1200px] mx-auto">
+    <section
+      className="flex w-full flex-col items-center bg-[#F4F8FF]"
+      style={{ padding: "60px 0px 40px" }}
+    >
+      {/* Calculator card */}
+      <div
+        className="w-full bg-white"
+        style={{
+          maxWidth: 1100,
+          borderRadius: "24px",
+          boxShadow: "rgba(157, 186, 227, 0.12) 0px 12px 40px 0px",
+          overflow: "hidden",
+        }}
+      >
         {/* Header */}
-        <div className="text-center mb-12">
+        <div
+          className="flex items-center justify-between border-b"
+          style={{
+            padding: "24px 40px",
+            borderColor: "rgb(228, 231, 236)",
+          }}
+        >
           {/* Toggle */}
-          <div className="inline-flex items-center rounded-full p-1 mb-6" style={{ backgroundColor: "#F2F4F7" }}>
+          <div
+            className="flex overflow-hidden"
+            style={{
+              borderRadius: "10px",
+              border: "1px solid rgb(228, 231, 236)",
+            }}
+          >
             <button
-              onClick={() => setMode("perRep")}
-              className="px-5 py-2 rounded-full text-sm font-medium transition-all"
+              type="button"
+              onClick={() => setMode("rep")}
               style={{
-                backgroundColor: mode === "perRep" ? "#fff" : "transparent",
-                color: mode === "perRep" ? "#101828" : "#667085",
-                boxShadow: mode === "perRep" ? "0 1px 3px rgba(0,0,0,0.1)" : "none",
+                padding: "8px 20px",
+                fontSize: "14px",
+                fontWeight: 600,
+                color:
+                  mode === "rep"
+                    ? "rgb(15, 23, 42)"
+                    : "rgb(100, 116, 139)",
+                backgroundColor:
+                  mode === "rep" ? "rgb(248, 250, 252)" : "transparent",
+                border: "none",
+                cursor: "pointer",
               }}
             >
               Per Rep
             </button>
             <button
+              type="button"
               onClick={() => setMode("team")}
-              className="px-5 py-2 rounded-full text-sm font-medium transition-all"
               style={{
-                backgroundColor: mode === "team" ? "#fff" : "transparent",
-                color: mode === "team" ? "#101828" : "#667085",
-                boxShadow: mode === "team" ? "0 1px 3px rgba(0,0,0,0.1)" : "none",
+                padding: "8px 20px",
+                fontSize: "14px",
+                fontWeight: 600,
+                color:
+                  mode === "team"
+                    ? "rgb(15, 23, 42)"
+                    : "rgb(100, 116, 139)",
+                backgroundColor:
+                  mode === "team" ? "rgb(248, 250, 252)" : "transparent",
+                border: "none",
+                cursor: "pointer",
               }}
             >
               Team
             </button>
           </div>
 
-          <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: "#101828" }}>
-            Omni Agent — Prospecting &amp; Outreach
+          {/* Title */}
+          <h2
+            style={{
+              fontSize: "32px",
+              fontWeight: 600,
+              color: "rgb(15, 23, 42)",
+              lineHeight: "32px",
+              letterSpacing: "-0.96px",
+              margin: 0,
+            }}
+          >
+            Omni Agent &mdash; Prospecting &amp; Outreach
           </h2>
-
-          {/* Weekly hours stepper */}
-          <div className="flex items-center justify-center gap-3 mt-6">
-            <span className="text-sm" style={{ color: "#667085" }}>
-              Weekly prospecting time (in hours)
-            </span>
-            <div className="inline-flex items-center gap-2 rounded-lg px-3 py-2" style={{ border: "1px solid #E4E7EC" }}>
-              <button
-                onClick={() => stepHours(-1)}
-                className="w-7 h-7 flex items-center justify-center rounded-md hover:bg-gray-100 transition-colors"
-                aria-label="Decrease hours"
-              >
-                <Minus size={14} />
-              </button>
-              <span className="w-8 text-center font-semibold text-sm" style={{ color: "#101828" }}>
-                {inputs.weeklyProspectingHours}
-              </span>
-              <button
-                onClick={() => stepHours(1)}
-                className="w-7 h-7 flex items-center justify-center rounded-md hover:bg-gray-100 transition-colors"
-                aria-label="Increase hours"
-              >
-                <Plus size={14} />
-              </button>
-            </div>
-          </div>
         </div>
 
-        {/* Stat Cards */}
-        <div className="grid md:grid-cols-2 gap-6 mb-12">
-          <StatCard
-            title="Prospecting Automation"
-            description="Reduced time researching leads and drafting personalized outreach."
-            value={formatCurrency(results.prospectingSavings, currency.symbol)}
-            sub={`\u2248 ${results.prospectingDaysSaved} days saved/yr`}
-          />
-          <StatCard
-            title="Scheduling & Admin"
-            description="Reduced time scheduling meetings, updating CRM, and follow-ups."
-            value={formatCurrency(results.schedulingSavings, currency.symbol)}
-            sub={`\u2248 ${results.schedulingDaysSaved} days saved/yr`}
-          />
-        </div>
-
-        {/* Main Content: Inputs + Results */}
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Advanced Inputs */}
-          <div className="rounded-2xl p-8" style={{ backgroundColor: "#fff", border: "1px solid #E4E7EC" }}>
-            <h3 className="text-lg font-semibold mb-6" style={{ color: "#101828" }}>
-              Advanced Inputs
-            </h3>
-
-            {/* Currency selector */}
-            <div className="mb-5">
-              <label className="block text-sm font-medium mb-1.5" style={{ color: "#344054" }}>
-                Currency
-              </label>
-              <div className="relative">
+        {/* Body — two columns */}
+        <div className="flex flex-col md:flex-row">
+          {/* Left — inputs & breakdown */}
+          <div
+            className="flex flex-1 flex-col border-r"
+            style={{
+              padding: "32px 40px",
+              borderColor: "rgb(228, 231, 236)",
+              gap: "28px",
+            }}
+          >
+            {/* Slider */}
+            <div>
+              <p
+                style={{
+                  fontSize: "15px",
+                  fontWeight: 500,
+                  color: "rgb(15, 23, 42)",
+                  lineHeight: "19.5px",
+                  letterSpacing: "-0.15px",
+                  margin: "0 0 16px",
+                }}
+              >
+                Weekly prospecting time (in hours)
+              </p>
+              <div className="flex items-center gap-4">
                 <button
-                  onClick={() => setShowCurrencyDropdown((v) => !v)}
-                  className="w-full flex items-center justify-between rounded-lg px-3 py-2.5 text-sm text-left"
-                  style={{ border: "1px solid #E4E7EC", color: "#101828" }}
+                  type="button"
+                  onClick={() => setHours(Math.max(5, hours - 5))}
+                  className="flex items-center justify-center rounded-lg border"
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderColor: "rgb(228, 231, 236)",
+                    backgroundColor: "white",
+                    cursor: "pointer",
+                    fontSize: "18px",
+                    fontWeight: 600,
+                    color: "rgb(15, 23, 42)",
+                  }}
                 >
-                  <span>
-                    {currency.symbol} {currency.code}
-                  </span>
-                  <ChevronDown size={16} className="text-gray-400" />
+                  &minus;
                 </button>
-                {showCurrencyDropdown && (
-                  <div
-                    className="absolute top-full left-0 right-0 mt-1 rounded-lg shadow-lg z-10 py-1"
-                    style={{ backgroundColor: "#fff", border: "1px solid #E4E7EC" }}
-                  >
-                    {currencies.map((c, i) => (
-                      <button
-                        key={c.code}
-                        onClick={() => {
-                          setCurrencyIndex(i);
-                          setShowCurrencyDropdown(false);
-                        }}
-                        className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50"
-                        style={{ color: "#101828" }}
-                      >
-                        {c.symbol} {c.code}
-                      </button>
-                    ))}
+                <div className="flex flex-1 flex-col gap-2">
+                  <div className="text-center">
+                    <span
+                      style={{
+                        fontSize: "28px",
+                        fontWeight: 700,
+                        color: "rgb(15, 23, 42)",
+                      }}
+                    >
+                      {hours}
+                    </span>
                   </div>
-                )}
+                  <input
+                    type="range"
+                    min={5}
+                    max={60}
+                    step={5}
+                    value={hours}
+                    onChange={(e) => setHours(Number(e.target.value))}
+                    className="w-full"
+                    style={{ accentColor: "#155EEF" }}
+                    aria-label="Weekly prospecting hours"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setHours(Math.min(60, hours + 5))}
+                  className="flex items-center justify-center rounded-lg border"
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderColor: "rgb(228, 231, 236)",
+                    backgroundColor: "white",
+                    cursor: "pointer",
+                    fontSize: "18px",
+                    fontWeight: 600,
+                    color: "rgb(15, 23, 42)",
+                  }}
+                >
+                  +
+                </button>
               </div>
             </div>
 
-            <InputField
-              label="Hourly wage"
-              prefix={currency.symbol}
-              value={inputs.hourlyWage}
-              onChange={(v) => updateInput("hourlyWage", v)}
-            />
-
-            {mode === "team" && (
-              <InputField
-                label="Number of SDRs"
-                value={inputs.numberOfSDRs}
-                onChange={(v) => updateInput("numberOfSDRs", v)}
+            {/* Result cards */}
+            <div className="flex flex-col gap-4">
+              <ResultCard
+                title="Prospecting Automation"
+                description="Reduced time researching leads and drafting personalized outreach."
+                value={formatK(displayProspecting)}
+                note={`\u2248 ${displayProspectingDays} days saved/yr`}
               />
-            )}
+              <ResultCard
+                title="Scheduling & Admin"
+                description="Reduced time scheduling meetings, updating CRM, and follow\u2011ups."
+                value={formatK(displayScheduling)}
+                note={`\u2248 ${displaySchedulingDays} days saved/yr`}
+              />
+            </div>
 
-            <InputField
-              label="Meetings per rep / month"
-              value={inputs.meetingsPerRepMonth}
-              onChange={(v) => updateInput("meetingsPerRepMonth", v)}
-            />
-
-            <InputField
-              label="Average deal size"
-              prefix={currency.symbol}
-              value={inputs.averageDealSize}
-              onChange={(v) => updateInput("averageDealSize", v)}
-            />
-
-            <InputField
-              label="Close rate (%)"
-              suffix="%"
-              value={inputs.closeRate}
-              onChange={(v) => updateInput("closeRate", v)}
-            />
-
-            <InputField
-              label="Expected uplift (%)"
-              suffix="%"
-              value={inputs.expectedUplift}
-              onChange={(v) => updateInput("expectedUplift", v)}
-            />
-
-            <InputField
-              label="Price per seat / month"
-              prefix={currency.symbol}
-              value={inputs.pricePerSeatMonth}
-              onChange={(v) => updateInput("pricePerSeatMonth", v)}
-            />
+            <button
+              type="button"
+              style={{
+                fontSize: "14px",
+                fontWeight: 500,
+                color: "#155EEF",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                textAlign: "left",
+                padding: 0,
+              }}
+            >
+              Advanced inputs
+            </button>
           </div>
 
-          {/* Results Panel */}
-          <div className="rounded-2xl p-8" style={{ backgroundColor: "#fff", border: "1px solid #E4E7EC" }}>
-            <p className="text-sm font-medium mb-1" style={{ color: "#667085" }}>
-              {mode === "team" ? "Your team can save" : "You can save"}
-            </p>
-            <p
-              className="font-bold mb-1"
-              style={{ fontSize: "48px", color: "#155EEF", lineHeight: 1.1 }}
-            >
-              {formatCurrency(results.totalSavings, currency.symbol)}
-            </p>
-            <p className="text-sm mb-6" style={{ color: "#667085" }}>
-              per year
-            </p>
+          {/* Right — summary */}
+          <div
+            className="flex flex-1 flex-col items-center justify-center"
+            style={{
+              padding: "40px",
+              gap: "24px",
+              backgroundColor: "rgb(248, 250, 252)",
+            }}
+          >
+            {/* Hero stat */}
+            <div className="text-center">
+              <p
+                style={{
+                  fontSize: "15px",
+                  fontWeight: 500,
+                  color: "rgb(100, 116, 139)",
+                  margin: "0 0 4px",
+                }}
+              >
+                Your {mode === "team" ? "team" : "rep"} can save
+              </p>
+              <p
+                style={{
+                  fontSize: "56px",
+                  fontWeight: 700,
+                  color: "#155EEF",
+                  lineHeight: "1",
+                  margin: "0 0 4px",
+                  letterSpacing: "-2px",
+                }}
+              >
+                {formatK(displaySavings)}
+              </p>
+              <p
+                style={{
+                  fontSize: "15px",
+                  fontWeight: 500,
+                  color: "rgb(100, 116, 139)",
+                  margin: 0,
+                }}
+              >
+                per year
+              </p>
+            </div>
 
-            <p className="text-sm mb-8" style={{ color: "#667085" }}>
-              In three years, for{" "}
-              {mode === "team" ? `${inputs.numberOfSDRs} SDRs` : "1 SDR"} and{" "}
-              {currency.symbol}
-              {inputs.hourlyWage}/hr wages,
+            {/* Context */}
+            <p
+              style={{
+                fontSize: "15px",
+                fontWeight: 500,
+                color: "rgb(15, 23, 42)",
+                lineHeight: "19.5px",
+                letterSpacing: "-0.15px",
+                margin: 0,
+                textAlign: "center",
+              }}
+            >
+              In three years, for {mode === "team" ? "5 SDRs" : "1 SDR"} and
+              $35/hr wages,
             </p>
 
             {/* Stats grid */}
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              <ResultStat
-                label="Payback period"
-                value={`${results.paybackMonths.toFixed(1)} Months`}
-              />
-              <ResultStat
-                label="ROI"
-                value={`${Math.round(results.roi)}%`}
-              />
-              <ResultStat
-                label="Net Savings"
-                value={formatCurrency(results.netSavings, currency.symbol)}
-              />
-              <ResultStat
-                label="Tool Cost (yr)"
-                value={formatCurrency(results.toolCostYear, currency.symbol)}
-              />
+            <div className="grid w-full grid-cols-2 gap-3">
+              <StatBox label="Payback period" value={`${payback} Months`} />
+              <StatBox label="ROI" value={`${roi}%`} />
+              <StatBox label="Net Savings" value={formatK(netSavings3yr)} />
+              <StatBox label="Tool Cost (yr)" value="$23.9K" />
             </div>
 
-            {/* Actions */}
-            <div className="flex flex-col gap-3">
-              <button
-                className="w-full flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium transition-colors"
-                style={{ border: "1px solid #E4E7EC", color: "#344054" }}
-              >
-                <Download size={16} />
-                Download Report
-              </button>
-              <button
-                className="w-full flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition-colors"
-                style={{ backgroundColor: "#155EEF" }}
-              >
-                Get Started
-                <ArrowRight size={16} />
-              </button>
-            </div>
+            {/* Download Report */}
+            <button
+              type="button"
+              className="w-full rounded-xl border"
+              style={{
+                padding: "12px 24px",
+                fontSize: "15px",
+                fontWeight: 600,
+                color: "rgb(15, 23, 42)",
+                backgroundColor: "white",
+                borderColor: "rgb(228, 231, 236)",
+                cursor: "pointer",
+              }}
+            >
+              Download Report
+            </button>
           </div>
         </div>
       </div>
@@ -363,102 +335,131 @@ export default function ROICalculatorSection() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Sub-components                                                     */
+/*  Sub-components                                                      */
 /* ------------------------------------------------------------------ */
 
-function StatCard({
+function ResultCard({
   title,
   description,
   value,
-  sub,
+  note,
 }: {
-  title: string;
-  description: string;
-  value: string;
-  sub: string;
+  readonly title: string;
+  readonly description: string;
+  readonly value: string;
+  readonly note: string;
 }) {
   return (
-    <div className="rounded-2xl p-8" style={{ backgroundColor: "#fff", border: "1px solid #E4E7EC" }}>
-      <h3 className="text-base font-semibold mb-1" style={{ color: "#101828" }}>
-        {title}
-      </h3>
-      <p className="text-sm mb-4" style={{ color: "#667085" }}>
+    <div
+      className="rounded-xl border"
+      style={{
+        padding: "16px 20px",
+        borderColor: "rgb(228, 231, 236)",
+      }}
+    >
+      <div className="mb-2 flex items-center justify-between">
+        <span
+          style={{
+            fontSize: "15px",
+            fontWeight: 600,
+            color: "rgb(15, 23, 42)",
+          }}
+        >
+          {title}
+        </span>
+        {/* Info icon */}
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+          aria-hidden="true"
+        >
+          <circle
+            cx="8"
+            cy="8"
+            r="7"
+            stroke="rgb(148, 163, 184)"
+            strokeWidth="1.5"
+          />
+          <path
+            d="M8 7V11"
+            stroke="rgb(148, 163, 184)"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          />
+          <circle cx="8" cy="5" r="0.75" fill="rgb(148, 163, 184)" />
+        </svg>
+      </div>
+      <p
+        style={{
+          fontSize: "13px",
+          fontWeight: 400,
+          color: "rgb(100, 116, 139)",
+          margin: "0 0 12px",
+          lineHeight: "18px",
+        }}
+      >
         {description}
       </p>
-      <p className="text-3xl font-bold" style={{ color: "#155EEF" }}>
-        {value}
-      </p>
-      <p className="text-sm mt-1" style={{ color: "#667085" }}>
-        {sub}
-      </p>
-    </div>
-  );
-}
-
-function InputField({
-  label,
-  prefix,
-  suffix,
-  value,
-  onChange,
-}: {
-  label: string;
-  prefix?: string;
-  suffix?: string;
-  value: number;
-  onChange: (v: number) => void;
-}) {
-  return (
-    <div className="mb-4">
-      <label className="block text-sm font-medium mb-1.5" style={{ color: "#344054" }}>
-        {label}
-      </label>
-      <div className="relative">
-        {prefix && (
-          <span
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-sm"
-            style={{ color: "#667085" }}
-          >
-            {prefix}
-          </span>
-        )}
-        <input
-          type="number"
-          value={value}
-          onChange={(e) => {
-            const parsed = parseFloat(e.target.value);
-            if (!isNaN(parsed)) {
-              onChange(parsed);
-            }
-          }}
-          className="w-full rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500/20"
+      <div className="flex items-baseline justify-between">
+        <span
           style={{
-            border: "1px solid #E4E7EC",
-            color: "#101828",
-            paddingLeft: prefix ? "1.75rem" : undefined,
-            paddingRight: suffix ? "2rem" : undefined,
+            fontSize: "28px",
+            fontWeight: 700,
+            color: "#155EEF",
+            letterSpacing: "-0.5px",
           }}
-        />
-        {suffix && (
-          <span
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-sm"
-            style={{ color: "#667085" }}
-          >
-            {suffix}
-          </span>
-        )}
+        >
+          {value}
+        </span>
+        <span
+          style={{
+            fontSize: "13px",
+            fontWeight: 500,
+            color: "rgb(100, 116, 139)",
+          }}
+        >
+          {note}
+        </span>
       </div>
     </div>
   );
 }
 
-function ResultStat({ label, value }: { label: string; value: string }) {
+function StatBox({
+  label,
+  value,
+}: {
+  readonly label: string;
+  readonly value: string;
+}) {
   return (
-    <div className="rounded-xl p-4" style={{ backgroundColor: "#F9FAFB" }}>
-      <p className="text-xs font-medium mb-1" style={{ color: "#667085" }}>
+    <div
+      className="rounded-xl bg-white"
+      style={{
+        padding: "14px 16px",
+        boxShadow: "rgba(157, 186, 227, 0.08) 0px 2px 8px 0px",
+      }}
+    >
+      <p
+        style={{
+          fontSize: "12px",
+          fontWeight: 500,
+          color: "rgb(100, 116, 139)",
+          margin: "0 0 4px",
+        }}
+      >
         {label}
       </p>
-      <p className="text-lg font-bold" style={{ color: "#101828" }}>
+      <p
+        style={{
+          fontSize: "20px",
+          fontWeight: 700,
+          color: "rgb(15, 23, 42)",
+          margin: 0,
+        }}
+      >
         {value}
       </p>
     </div>

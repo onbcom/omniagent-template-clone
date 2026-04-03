@@ -1,227 +1,367 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useCallback } from "react";
+import { useState } from "react";
 
-interface CaseStudy {
-  name: string;
-  role: string;
-  quote: string;
-  image: string;
-  stats: [string, string];
-  cta: string;
+/* ------------------------------------------------------------------ */
+/*  Icons                                                               */
+/* ------------------------------------------------------------------ */
+
+function ArrowCircleWhite() {
+  return (
+    <span className="flex items-center justify-center" style={{ width: 28, height: 28 }}>
+      <span
+        className="flex items-center justify-center"
+        style={{ width: 12, height: 12, borderRadius: "50%", backgroundColor: "rgb(255, 255, 255)" }}
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M 9 3.333 L 13.667 8 L 9 12.667 M 2.333 8 L 13.333 8" stroke="#155EEF" strokeWidth="1.33" strokeMiterlimit="10" />
+        </svg>
+      </span>
+    </span>
+  );
 }
 
-const caseStudies: CaseStudy[] = [
+function ArrowCircleDark() {
+  return (
+    <span className="flex items-center justify-center" style={{ width: 28, height: 28 }}>
+      <span
+        className="flex items-center justify-center"
+        style={{ width: 10, height: 10, borderRadius: "50%", backgroundColor: "rgb(25, 26, 28)" }}
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M 9 3.333 L 13.667 8 L 9 12.667 M 2.333 8 L 13.333 8" stroke="#FFFFFF" strokeWidth="1.33" strokeMiterlimit="10" />
+        </svg>
+      </span>
+    </span>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Data                                                                */
+/* ------------------------------------------------------------------ */
+
+interface CaseStudy {
+  readonly image: string;
+  readonly firstName: string;
+  readonly lastName: string;
+  readonly role: string;
+  readonly quote: string;
+  readonly stat1Value: string;
+  readonly stat1Label: string;
+  readonly stat2Value: string;
+  readonly stat2Label: string;
+}
+
+const CASE_STUDIES: readonly CaseStudy[] = [
   {
-    name: "Michael Rodriguez",
+    image: "/images/flower-lilac.jpg",
+    firstName: "Michael",
+    lastName: "Rodriguez",
     role: "Head of Sales, FlowForge",
     quote:
       "The SDR agent handled our outreach like a seasoned rep. The personalization was spot on\u2014messages felt natural and tailored. Prospects actually replied thinking it was a real person.",
-    image: "/images/person-michael.jpg",
-    stats: ["3x More meetings booked weekly", "75% Reduction in manual outreach"],
-    cta: "See Michael\u2019s Story",
+    stat1Value: "3\u00d7",
+    stat1Label: "More meetings booked weekly",
+    stat2Value: "75%",
+    stat2Label: "Reduction in manual outreach",
   },
   {
-    name: "Sarah Davis",
+    image: "/images/flower-purple.jpg",
+    firstName: "Sarah",
+    lastName: "Davis",
     role: "Growth Lead, Beaconly",
     quote:
       "We don\u2019t have a huge sales team, so Omni SDR was like hiring 3 reps overnight. It learns fast, personalizes well, and doesn\u2019t miss follow-ups. Our inbound and outbound are now in sync.",
-    image: "/images/person-sarah.jpg",
-    stats: ["4x Increase in Responses", "2x ROI-positive (2 Weeks)"],
-    cta: "See Sarah\u2019s Story",
+    stat1Value: "4\u00d7",
+    stat1Label: "Increase in Responses",
+    stat2Value: "2 x",
+    stat2Label: "ROI-positive (2 Weeks)",
   },
   {
-    name: "Lisa Raymond",
+    image: "/images/flower-yellow.jpg",
+    firstName: "Lisa",
+    lastName: "Raymond",
     role: "Sales Director, NovaShift",
     quote:
       "I was skeptical at first, but Omni SDR proved me wrong fast. We had cold leads turning warm in days, and our CRM stayed organized without any of us touching it. It just runs.",
-    image: "/images/person-lisa.png",
-    stats: ["60% Boost in cold lead conversions", "90 Hours saved every month"],
-    cta: "See Lisa\u2019s Story",
+    stat1Value: "60%",
+    stat1Label: "Boost in cold lead conversions",
+    stat2Value: "90",
+    stat2Label: "Hours saved every month",
   },
 ];
 
-function CaseStudyCard({ study }: { study: CaseStudy }) {
-  return (
-    <div className="min-w-[320px] w-[400px] max-w-[85vw] flex-shrink-0 snap-start rounded-2xl overflow-hidden bg-white border border-gray-200 flex flex-col">
-      {/* Flower image */}
-      <div className="relative w-full" style={{ aspectRatio: "2 / 3" }}>
-        <Image
-          src={study.image}
-          alt={`${study.name} case study`}
-          fill
-          className="object-cover"
-          sizes="(max-width: 768px) 85vw, 400px"
-        />
-      </div>
+/* ------------------------------------------------------------------ */
+/*  CaseStudyCard                                                       */
+/* ------------------------------------------------------------------ */
 
-      {/* Content area with overlapping avatar */}
-      <div className="relative px-6 pt-8 pb-6 flex flex-col gap-4">
-        {/* Circular avatar overlapping the image boundary */}
-        <div className="absolute -top-8 left-6 w-16 h-16 rounded-full border-4 border-white overflow-hidden bg-gray-200">
+function CaseStudyCard({ study }: { readonly study: CaseStudy }) {
+  return (
+    <div className="flex flex-col" style={{ gap: 20, width: "100%" }}>
+      {/* Main Card */}
+      <div
+        className="flex flex-col overflow-hidden md:flex-row"
+        style={{
+          backgroundColor: "rgb(255, 255, 255)",
+          borderRadius: 20,
+          width: "100%",
+          minHeight: 443,
+        }}
+      >
+        {/* Left: Image with name overlay */}
+        <div
+          className="relative shrink-0 overflow-hidden"
+          style={{ width: 404, maxWidth: "100%", borderRadius: 20 }}
+        >
           <Image
             src={study.image}
-            alt={study.name}
+            alt={`${study.firstName} ${study.lastName}`}
             fill
             className="object-cover"
-            sizes="64px"
           />
-        </div>
-
-        {/* Name and role */}
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900">{study.name}</h3>
-          <p className="text-sm text-gray-500">{study.role}</p>
-        </div>
-
-        {/* Quote */}
-        <p className="text-sm text-gray-600 leading-relaxed">
-          &ldquo;{study.quote}&rdquo;
-        </p>
-
-        {/* Stats */}
-        <div className="flex gap-4">
-          {study.stats.map((stat) => {
-            const parts = stat.match(/^([\d.]+[x%]?\s*)/);
-            const highlight = parts ? parts[1] : "";
-            const rest = parts ? stat.slice(highlight.length) : stat;
-            return (
-              <div
-                key={stat}
-                className="flex-1 rounded-lg bg-gray-50 px-3 py-2"
-              >
-                <p className="text-sm font-semibold text-gray-900">
-                  {highlight}
-                </p>
-                <p className="text-xs text-gray-500">{rest}</p>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* CTA link */}
-        <a
-          href="#"
-          className="inline-flex items-center gap-1 text-sm font-medium text-[#155EEF] hover:underline"
-        >
-          {study.cta}
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true"
+          {/* Name overlay at bottom */}
+          <div
+            className="absolute bottom-0 left-0 flex w-full flex-col gap-0.5 p-6"
+            style={{
+              background:
+                "linear-gradient(transparent 0%, rgba(0,0,0,0.6) 100%)",
+            }}
           >
-            <path
-              d="M6 12L10 8L6 4"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </a>
+            <h6
+              style={{
+                fontSize: 20,
+                fontWeight: 600,
+                color: "rgb(255, 255, 255)",
+                lineHeight: "26px",
+                letterSpacing: "-0.4px",
+                margin: 0,
+              }}
+            >
+              {study.firstName}
+            </h6>
+            <h6
+              style={{
+                fontSize: 20,
+                fontWeight: 600,
+                color: "rgb(255, 255, 255)",
+                lineHeight: "26px",
+                letterSpacing: "-0.4px",
+                margin: 0,
+              }}
+            >
+              {study.lastName}
+            </h6>
+            <p
+              style={{
+                fontSize: 16,
+                fontWeight: 500,
+                color: "rgb(255, 255, 255)",
+                lineHeight: "22.4px",
+                margin: 0,
+              }}
+            >
+              {study.role}
+            </p>
+          </div>
+        </div>
+
+        {/* Right: Quote + Stats */}
+        <div className="flex flex-1 flex-col justify-between p-10">
+          {/* Quote */}
+          <h4
+            style={{
+              fontSize: 27.6,
+              fontWeight: 500,
+              color: "rgb(12, 17, 29)",
+              lineHeight: "38.64px",
+              margin: 0,
+            }}
+          >
+            &ldquo;{study.quote}&rdquo;
+          </h4>
+
+          {/* Stats */}
+          <div className="flex gap-12 pt-8">
+            <div className="flex flex-col gap-1">
+              <h3
+                style={{
+                  fontSize: 32.6,
+                  fontWeight: 600,
+                  color: "rgb(12, 17, 29)",
+                  lineHeight: "39.12px",
+                  letterSpacing: "-0.652px",
+                  margin: 0,
+                }}
+              >
+                {study.stat1Value}
+              </h3>
+              <p
+                style={{
+                  fontSize: 16,
+                  fontWeight: 500,
+                  color: "rgb(52, 64, 84)",
+                  lineHeight: "25.6px",
+                  margin: 0,
+                }}
+              >
+                {study.stat1Label}
+              </p>
+            </div>
+            <div className="flex flex-col gap-1">
+              <h3
+                style={{
+                  fontSize: 32.6,
+                  fontWeight: 600,
+                  color: "rgb(12, 17, 29)",
+                  lineHeight: "39.12px",
+                  letterSpacing: "-0.652px",
+                  margin: 0,
+                }}
+              >
+                {study.stat2Value}
+              </h3>
+              <p
+                style={{
+                  fontSize: 16,
+                  fontWeight: 500,
+                  color: "rgb(52, 64, 84)",
+                  lineHeight: "25.6px",
+                  margin: 0,
+                }}
+              >
+                {study.stat2Label}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
-export default function CaseStudiesSection() {
-  const scrollRef = useRef<HTMLDivElement>(null);
+/* ------------------------------------------------------------------ */
+/*  Main Component                                                      */
+/* ------------------------------------------------------------------ */
 
-  const scroll = useCallback((direction: "prev" | "next") => {
-    const container = scrollRef.current;
-    if (!container) return;
-    const cardWidth = container.querySelector<HTMLElement>(":scope > div")?.offsetWidth ?? 400;
-    const gap = 24; // gap-6 = 24px
-    const scrollAmount = cardWidth + gap;
-    container.scrollBy({
-      left: direction === "next" ? scrollAmount : -scrollAmount,
-      behavior: "smooth",
-    });
-  }, []);
+export default function CaseStudiesSection() {
+  const [activeIndex, setActiveIndex] = useState(0);
 
   return (
-    <section className="w-full py-20 px-4 sm:px-6 lg:px-8 bg-white">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12">
-          <div>
-            <h2 className="text-3xl sm:text-4xl font-semibold text-gray-900 tracking-tight">
+    <section
+      className="flex w-full justify-center"
+      style={{
+        backgroundColor: "rgb(244, 248, 255)",
+        padding: "70px 20px",
+      }}
+    >
+      <div
+        className="flex w-full flex-col"
+        style={{ maxWidth: 1150, gap: 47 }}
+      >
+        {/* ---- Header ---- */}
+        <div
+          className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center"
+          style={{ padding: "0 20px" }}
+        >
+          <div className="flex flex-col" style={{ gap: 8 }}>
+            <h2
+              style={{
+                fontSize: 37.6,
+                fontWeight: 700,
+                color: "rgb(24, 34, 48)",
+                lineHeight: "45.12px",
+                letterSpacing: "-0.752px",
+              }}
+            >
               Case Studies
             </h2>
-            <p className="mt-3 text-lg text-gray-500 max-w-2xl">
+            <p
+              style={{
+                fontSize: 16,
+                fontWeight: 500,
+                color: "rgb(71, 84, 103)",
+                lineHeight: "25.6px",
+                letterSpacing: "-0.32px",
+              }}
+            >
               See how leading teams use Omni SDR to boost replies, scale
               outreach, and close deals faster.
             </p>
           </div>
+
+          {/* See all case studies button */}
           <a
             href="#"
-            className="inline-flex items-center gap-1 text-sm font-medium text-[#155EEF] hover:underline whitespace-nowrap"
+            className="flex shrink-0 items-center no-underline"
+            style={{
+              borderRadius: 1000,
+              padding: "4px 4px 4px 12px",
+              height: 36,
+              backgroundColor: "rgb(21, 94, 239)",
+            }}
           >
-            See all case studies
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
+            <span
+              style={{
+                fontSize: 16,
+                fontWeight: 600,
+                color: "rgb(255, 255, 255)",
+                lineHeight: "25.6px",
+                letterSpacing: "-0.32px",
+                paddingLeft: 2,
+              }}
             >
-              <path
-                d="M6 12L10 8L6 4"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+              See all case studies
+            </span>
+            <ArrowCircleWhite />
           </a>
         </div>
 
-        {/* Carousel wrapper */}
-        <div className="relative">
-          {/* Scrollable cards */}
-          <div
-            ref={scrollRef}
-            className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-          >
-            {caseStudies.map((study) => (
-              <CaseStudyCard key={study.name} study={study} />
-            ))}
-          </div>
+        {/* ---- Slideshow ---- */}
+        <div style={{ padding: "0 20px" }}>
+          <CaseStudyCard study={CASE_STUDIES[activeIndex]} />
 
-          {/* Navigation buttons */}
-          <div className="flex gap-3 mt-8 justify-end">
-            <button
-              type="button"
-              onClick={() => scroll("prev")}
-              aria-label="Previous case study"
-              className="w-12 h-12 flex items-center justify-center rounded-full border border-[#E4E7EC] bg-white hover:bg-gray-50 transition-colors"
-            >
-              <Image
-                src="/images/arrow-back.svg"
-                alt=""
-                width={20}
-                height={20}
-              />
-            </button>
-            <button
-              type="button"
-              onClick={() => scroll("next")}
-              aria-label="Next case study"
-              className="w-12 h-12 flex items-center justify-center rounded-full border border-[#E4E7EC] bg-white hover:bg-gray-50 transition-colors"
-            >
-              <Image
-                src="/images/arrow-next.svg"
-                alt=""
-                width={20}
-                height={20}
-              />
-            </button>
+          {/* Navigation Buttons */}
+          <div className="mt-5 flex gap-3">
+            {CASE_STUDIES.map((study, index) => (
+              <button
+                key={study.firstName}
+                type="button"
+                onClick={() => setActiveIndex(index)}
+                className="flex items-center border-none no-underline"
+                style={{
+                  borderRadius: 100,
+                  padding: "4px 4px 4px 16px",
+                  height: 36,
+                  backgroundColor:
+                    index === activeIndex
+                      ? "rgb(21, 94, 239)"
+                      : "rgb(244, 248, 255)",
+                  cursor: "pointer",
+                  gap: 6,
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 600,
+                    color:
+                      index === activeIndex
+                        ? "rgb(255, 255, 255)"
+                        : "rgb(24, 34, 48)",
+                    lineHeight: "25.6px",
+                    letterSpacing: "-0.32px",
+                  }}
+                >
+                  See {study.firstName}&apos;s Story
+                </span>
+                {index === activeIndex ? (
+                  <ArrowCircleWhite />
+                ) : (
+                  <ArrowCircleDark />
+                )}
+              </button>
+            ))}
           </div>
         </div>
       </div>

@@ -1,245 +1,416 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 
-const tabs = [
-  { id: "lead-research", label: "Lead Research Agent" },
-  { id: "outreach", label: "Outreach Agent" },
-  { id: "qualification", label: "Qualification Agent" },
-  { id: "meeting", label: "Meeting Agent" },
-  { id: "crm-insights", label: "CRM & Insights Agent" },
-] as const;
+/* ------------------------------------------------------------------ */
+/*  Shared arrow icon                                                   */
+/* ------------------------------------------------------------------ */
 
-type TabId = (typeof tabs)[number]["id"];
-
-interface LeadProfile {
-  initials: string;
-  name: string;
-  role: string;
-  company: string;
-  intentScore: number;
+function ArrowCircle() {
+  return (
+    <span className="ml-2 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white">
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 16 16"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path
+          d="M3.33337 8H12.6667"
+          stroke="#155EEF"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M8.66663 4L12.6666 8L8.66663 12"
+          stroke="#155EEF"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </span>
+  );
 }
 
-const leadProfiles: LeadProfile[] = [
+/* ------------------------------------------------------------------ */
+/*  Tab data                                                            */
+/* ------------------------------------------------------------------ */
+
+interface TabContent {
+  readonly label: string;
+  readonly heading: string;
+  readonly description: string;
+}
+
+const TABS: readonly TabContent[] = [
   {
-    initials: "KH",
-    name: "Katherine Harris",
-    role: "VP of Growth",
-    company: "TechFlow",
-    intentScore: 92,
+    label: "Lead Research Agent",
+    heading: "AI Lead Research Agent",
+    description:
+      "Discover new opportunities automatically. Omni Agent scans the web, funding databases, and job signals to find high-potential leads that match your ICP \u2014 before your competitors even notice.",
   },
   {
-    initials: "LB",
-    name: "Lauren Bennett",
-    role: "Director of Product",
-    company: "Nova Systems",
-    intentScore: 89,
+    label: "Outreach Agent",
+    heading: "AI Outreach Agent",
+    description:
+      "Craft hyper-personalized emails at scale. Omni Agent writes, sends, and follows up with prospects using context from their company, role, and recent activity\u2014so every message feels hand-written.",
   },
   {
-    initials: "DT",
-    name: "Daniel Thompson",
-    role: "Director of Product",
-    company: "Nova Systems",
-    intentScore: 72,
+    label: "Qualification Agent",
+    heading: "AI Qualification Agent",
+    description:
+      "Automatically score and qualify inbound leads based on fit, intent, and engagement signals. Focus your team\u2019s time on the prospects most likely to convert.",
+  },
+  {
+    label: "Meeting Agent",
+    heading: "AI Meeting Agent",
+    description:
+      "Handle scheduling, reminders, and confirmations automatically. Omni Agent coordinates calendars and sends meeting prep\u2014so reps walk into every call ready to close.",
+  },
+  {
+    label: "CRM & Insights Agent",
+    heading: "AI CRM & Insights Agent",
+    description:
+      "Keep your CRM clean and actionable. Omni Agent logs every interaction, updates deal stages, and surfaces insights so nothing slips through the cracks.",
   },
 ];
 
-function getScoreColor(score: number): string {
-  if (score >= 80) return "bg-green-500";
-  if (score >= 60) return "bg-yellow-500";
-  return "bg-red-500";
+/* ------------------------------------------------------------------ */
+/*  Lead card data                                                      */
+/* ------------------------------------------------------------------ */
+
+interface LeadCard {
+  readonly name: string;
+  readonly role: string;
+  readonly intentScore: number;
+  readonly image: string;
+  readonly width: number;
+  readonly height: number;
+  readonly borderRadius: number;
 }
 
-function getScoreTrackColor(score: number): string {
-  if (score >= 80) return "bg-green-100";
-  if (score >= 60) return "bg-yellow-100";
-  return "bg-red-100";
-}
+const LEAD_CARDS: readonly LeadCard[] = [
+  {
+    name: "Katherine Harris",
+    role: "VP of Growth at TechFlow",
+    intentScore: 92,
+    image: "/images/person-sarah.jpg",
+    width: 231,
+    height: 91,
+    borderRadius: 11.33,
+  },
+  {
+    name: "Lauren Bennett",
+    role: "Director of Product at Nova Systems",
+    intentScore: 89,
+    image: "/images/person-woman-blue.jpg",
+    width: 216,
+    height: 86,
+    borderRadius: 10.43,
+  },
+  {
+    name: "Daniel Thompson",
+    role: "Director of Product at Nova Systems",
+    intentScore: 72,
+    image: "/images/person-michael.jpg",
+    width: 228,
+    height: 90,
+    borderRadius: 10.95,
+  },
+];
 
-function LeadCard({ lead }: { lead: LeadProfile }) {
+/* ------------------------------------------------------------------ */
+/*  Lead card component                                                 */
+/* ------------------------------------------------------------------ */
+
+function LeadCardItem({ card }: { readonly card: LeadCard }) {
   return (
-    <div className="flex items-start gap-3 py-4 border-b border-[#E4E7EC] last:border-b-0">
-      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#155EEF] flex items-center justify-center text-white text-sm font-semibold">
-        {lead.initials}
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between gap-2">
-          <div>
-            <p className="text-sm font-semibold text-[#101828]">{lead.name}</p>
-            <p className="text-xs text-[#667085]">
-              {lead.role} at {lead.company}
-            </p>
+    <div
+      className="flex items-center gap-2.5 bg-white"
+      style={{
+        width: card.width,
+        minHeight: card.height,
+        borderRadius: card.borderRadius,
+        padding: "10px 12px",
+        boxShadow: "rgba(157, 186, 227, 0.12) 0px 4px 12px 0px",
+      }}
+    >
+      {/* Avatar */}
+      <Image
+        src={card.image}
+        alt={card.name}
+        width={36}
+        height={36}
+        className="shrink-0 rounded-full object-cover"
+        style={{ width: 36, height: 36 }}
+      />
+
+      {/* Info */}
+      <div className="flex flex-1 flex-col" style={{ gap: "2px" }}>
+        <span
+          style={{
+            fontSize: "12px",
+            fontWeight: 600,
+            color: "rgb(0, 0, 0)",
+            lineHeight: "19.2px",
+          }}
+        >
+          {card.name}
+        </span>
+        <span
+          style={{
+            fontSize: "9.8px",
+            fontWeight: 500,
+            color: "rgb(152, 162, 179)",
+            lineHeight: "15.68px",
+          }}
+        >
+          {card.role}
+        </span>
+
+        {/* Intent + CRM badge row */}
+        <div className="mt-1 flex items-center gap-2">
+          <div
+            className="flex items-center gap-1 rounded-full"
+            style={{
+              backgroundColor: "rgba(18, 183, 106, 0.1)",
+              padding: "2px 8px",
+            }}
+          >
+            <span
+              style={{
+                fontSize: "9px",
+                fontWeight: 400,
+                color: "rgb(45, 54, 41)",
+                lineHeight: "10.8px",
+              }}
+            >
+              Intent Score :
+            </span>
+            <span
+              style={{
+                fontSize: "9px",
+                fontWeight: 400,
+                color: "rgb(45, 54, 41)",
+                lineHeight: "10.8px",
+              }}
+            >
+              {card.intentScore}/100
+            </span>
           </div>
-          <span className="flex-shrink-0 bg-green-50 text-green-700 rounded-full text-xs px-2 py-0.5 font-medium">
+          <span
+            className="rounded-full"
+            style={{
+              fontSize: "8px",
+              fontWeight: 500,
+              color: "rgb(45, 54, 41)",
+              lineHeight: "9.6px",
+              backgroundColor: "rgba(18, 183, 106, 0.1)",
+              padding: "2px 6px",
+            }}
+          >
             Added to CRM
           </span>
         </div>
-        <div className="mt-2 flex items-center gap-2">
-          <span className="text-xs text-[#667085] whitespace-nowrap">
-            Intent Score
-          </span>
-          <div
-            className={`flex-1 h-2 rounded-full ${getScoreTrackColor(lead.intentScore)}`}
-          >
-            <div
-              className={`h-2 rounded-full ${getScoreColor(lead.intentScore)} transition-all duration-300`}
-              style={{ width: `${lead.intentScore}%` }}
-            />
-          </div>
-          <span className="text-xs font-medium text-[#344054] whitespace-nowrap">
-            {lead.intentScore}/100
-          </span>
-        </div>
       </div>
     </div>
   );
 }
 
-function LeadResearchContent() {
+/* ------------------------------------------------------------------ */
+/*  Right visual — Lead Research Cards                                  */
+/* ------------------------------------------------------------------ */
+
+function LeadResearchVisual() {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-      <div>
-        <h3 className="text-2xl font-semibold text-[#101828] mb-4">
-          AI Lead Research Agent
-        </h3>
-        <p className="text-base text-[#667085] leading-7 mb-6">
-          Discover new opportunities automatically. Omni Agent scans the web,
-          funding databases, and job signals to find high-potential leads that
-          match your ICP — before your competitors even notice.
-        </p>
-        <a
-          href="#"
-          className="inline-flex items-center justify-center rounded-lg bg-[#155EEF] text-white px-5 py-2.5 text-sm font-medium hover:bg-[#1249c4] transition-colors"
-        >
-          Get Started
-        </a>
-      </div>
-      <div className="bg-white rounded-2xl border border-[#E4E7EC] shadow-sm p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-2 h-2 rounded-full bg-green-500" />
-          <span className="text-sm font-medium text-[#344054]">
-            Live Lead Discovery
-          </span>
+    <div
+      className="relative flex items-center justify-center"
+      style={{ width: 422, height: 343 }}
+    >
+      {/* Radar concentric circles */}
+      <div className="absolute flex items-center justify-center" style={{ width: 288, height: 288, right: 20, top: 0 }}>
+        <div className="absolute rounded-full border border-[#155EEF]/5" style={{ width: 288, height: 288 }} />
+        <div className="absolute rounded-full border border-[#155EEF]/10" style={{ width: 220, height: 220 }} />
+        <div className="absolute rounded-full border border-[#155EEF]/15" style={{ width: 150, height: 150 }} />
+        <div className="absolute rounded-full border border-[#155EEF]/20" style={{ width: 80, height: 80 }} />
+        {/* Logo orb center */}
+        <div className="absolute z-[2]">
+          <Image
+            src="/images/omni-icon-small.png"
+            alt="Omni Agent"
+            width={43}
+            height={43}
+          />
         </div>
-        {leadProfiles.map((lead) => (
-          <LeadCard key={lead.name} lead={lead} />
-        ))}
+      </div>
+
+      {/* Lead cards positioned around the radar */}
+      <div className="absolute" style={{ left: 0, top: 20 }}>
+        <LeadCardItem card={LEAD_CARDS[0]} />
+      </div>
+      <div className="absolute" style={{ right: 0, top: 120 }}>
+        <LeadCardItem card={LEAD_CARDS[1]} />
+      </div>
+      <div className="absolute" style={{ left: 20, bottom: 0 }}>
+        <LeadCardItem card={LEAD_CARDS[2]} />
       </div>
     </div>
   );
 }
 
-const placeholderDescriptions: Record<
-  Exclude<TabId, "lead-research">,
-  { title: string; description: string }
-> = {
-  outreach: {
-    title: "AI Outreach Agent",
-    description:
-      "Craft personalized outreach sequences at scale. The Outreach Agent generates tailored emails, LinkedIn messages, and follow-ups based on each prospect's profile, ensuring every touchpoint feels human and relevant.",
-  },
-  qualification: {
-    title: "AI Qualification Agent",
-    description:
-      "Instantly qualify inbound and outbound leads. The Qualification Agent scores prospects based on fit, intent, and engagement — so your team only spends time on leads most likely to convert.",
-  },
-  meeting: {
-    title: "AI Meeting Agent",
-    description:
-      "Never miss a meeting opportunity. The Meeting Agent handles scheduling, sends reminders, prepares briefing docs, and follows up after calls — keeping your pipeline moving without manual effort.",
-  },
-  "crm-insights": {
-    title: "AI CRM & Insights Agent",
-    description:
-      "Keep your CRM accurate and actionable. The CRM & Insights Agent automatically logs activities, enriches contact data, and surfaces deal insights so you always know where every opportunity stands.",
-  },
-};
-
-function PlaceholderContent({ tabId }: { tabId: Exclude<TabId, "lead-research"> }) {
-  const content = placeholderDescriptions[tabId];
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-      <div>
-        <h3 className="text-2xl font-semibold text-[#101828] mb-4">
-          {content.title}
-        </h3>
-        <p className="text-base text-[#667085] leading-7 mb-6">
-          {content.description}
-        </p>
-        <a
-          href="#"
-          className="inline-flex items-center justify-center rounded-lg bg-[#155EEF] text-white px-5 py-2.5 text-sm font-medium hover:bg-[#1249c4] transition-colors"
-        >
-          Get Started
-        </a>
-      </div>
-      <div className="bg-white rounded-2xl border border-[#E4E7EC] shadow-sm p-6 flex items-center justify-center min-h-[280px]">
-        <div className="text-center">
-          <div className="w-16 h-16 rounded-full bg-[#EFF4FF] flex items-center justify-center mx-auto mb-4">
-            <svg
-              className="w-8 h-8 text-[#155EEF]"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={1.5}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 0 0-2.455 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"
-              />
-            </svg>
-          </div>
-          <p className="text-sm font-medium text-[#344054]">{content.title}</p>
-          <p className="text-xs text-[#667085] mt-1">Coming soon</p>
-        </div>
-      </div>
-    </div>
-  );
-}
+/* ------------------------------------------------------------------ */
+/*  Main export                                                        */
+/* ------------------------------------------------------------------ */
 
 export default function AgentsPipelineSection() {
-  const [activeTab, setActiveTab] = useState<TabId>("lead-research");
+  const [activeTab, setActiveTab] = useState(0);
 
   return (
-    <section className="bg-white py-20">
-      <div className="max-w-[1200px] mx-auto px-6">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-semibold text-[#101828] mb-4">
+    <section className="flex w-full justify-center bg-[#F4F8FF]">
+      <div
+        className="flex w-full max-w-[1150px] flex-col"
+        style={{ padding: "50px 20px" }}
+      >
+        {/* Header */}
+        <div
+          className="flex flex-col"
+          style={{ maxWidth: 707, gap: "8px", marginBottom: 40 }}
+        >
+          <h2
+            style={{
+              fontSize: "37.6px",
+              fontWeight: 700,
+              color: "rgb(24, 34, 48)",
+              lineHeight: "45.12px",
+              letterSpacing: "-0.752px",
+              margin: 0,
+            }}
+          >
             AI Agents that run your entire sales pipeline
           </h2>
-          <p className="text-lg text-[#667085] max-w-2xl mx-auto">
-            Omni Agent handles every part of the sales process — from finding
-            prospects to closing deals — so you never lose a lead again.
+          <p
+            style={{
+              fontSize: "16px",
+              fontWeight: 500,
+              color: "rgb(71, 84, 103)",
+              lineHeight: "25.6px",
+              letterSpacing: "-0.32px",
+              margin: 0,
+            }}
+          >
+            Omni Agent handles every part of the sales process &mdash; from
+            finding prospects to closing deals &mdash; so you never lose a lead
+            again.
           </p>
         </div>
 
-        <div className="flex gap-2 mb-10 overflow-x-auto pb-2 scrollbar-hide">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`rounded-full px-5 py-2.5 text-sm font-medium whitespace-nowrap transition-colors ${
-                activeTab === tab.id
-                  ? "bg-[#155EEF] text-white"
-                  : "bg-[#F9FAFB] text-[#344054] hover:bg-[#F2F4F7]"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="relative">
+        {/* Tabs + Content Area */}
+        <div
+          className="flex w-full flex-col gap-6 md:flex-row"
+          style={{ maxWidth: 1110 }}
+        >
+          {/* Tabs */}
           <div
-            key={activeTab}
-            className="animate-fade-in"
+            className="flex shrink-0 flex-col"
+            style={{ width: 292, gap: "8px" }}
           >
-            {activeTab === "lead-research" ? (
-              <LeadResearchContent />
-            ) : (
-              <PlaceholderContent tabId={activeTab} />
-            )}
+            {TABS.map((tab, i) => (
+              <button
+                key={tab.label}
+                type="button"
+                onClick={() => setActiveTab(i)}
+                className="text-left transition-colors"
+                style={{
+                  width: "100%",
+                  height: 37,
+                  borderRadius: "8px",
+                  backgroundColor:
+                    activeTab === i ? "rgb(255, 255, 255)" : "transparent",
+                  border: "none",
+                  padding: "0px 14px",
+                  cursor: "pointer",
+                  boxShadow:
+                    activeTab === i
+                      ? "rgba(157, 186, 227, 0.08) 0px 2px 8px 0px"
+                      : "none",
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    color: "rgb(52, 64, 84)",
+                    lineHeight: "17px",
+                  }}
+                >
+                  {tab.label}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {/* Content */}
+          <div className="flex flex-1 flex-col gap-6 md:flex-row">
+            {/* Left — text + CTA */}
+            <div
+              className="flex flex-col justify-center"
+              style={{ maxWidth: 309, gap: "20px" }}
+            >
+              <div className="flex flex-col" style={{ gap: "10px" }}>
+                <h5
+                  style={{
+                    fontSize: "22.6px",
+                    fontWeight: 700,
+                    color: "rgb(0, 0, 0)",
+                    lineHeight: "31.64px",
+                    letterSpacing: "-0.452px",
+                    margin: 0,
+                  }}
+                >
+                  {TABS[activeTab].heading}
+                </h5>
+                <p
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: 500,
+                    color: "rgb(71, 84, 103)",
+                    lineHeight: "20px",
+                    margin: 0,
+                  }}
+                >
+                  {TABS[activeTab].description}
+                </p>
+              </div>
+
+              {/* CTA */}
+              <a
+                href="#"
+                className="inline-flex items-center rounded-[1000px] bg-[#155EEF] py-1 pr-1 pl-5 no-underline"
+                style={{ height: 36, width: 136.578 }}
+              >
+                <span
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: 600,
+                    color: "rgb(255, 255, 255)",
+                    letterSpacing: "-0.32px",
+                    lineHeight: "25.6px",
+                  }}
+                >
+                  Get Started
+                </span>
+                <ArrowCircle />
+              </a>
+            </div>
+
+            {/* Right — Visual */}
+            <div className="flex flex-1 items-center justify-center">
+              <LeadResearchVisual />
+            </div>
           </div>
         </div>
       </div>

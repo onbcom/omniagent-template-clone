@@ -1,169 +1,369 @@
-import {
-  CalendarCheck,
-  UserCheck,
-  Mail,
-  ClipboardList,
-  FileText,
-  RefreshCw,
-  Bot,
-} from "lucide-react";
-import type { ReactNode } from "react";
+import Image from "next/image";
 
-interface ActivityItem {
-  icon: ReactNode;
-  dotColor: string;
-  title: string;
-  subtitle: string;
+/* ------------------------------------------------------------------ */
+/*  Shared arrow icon                                                   */
+/* ------------------------------------------------------------------ */
+
+function ArrowCircle() {
+  return (
+    <span className="ml-2 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white">
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 16 16"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path
+          d="M3.33337 8H12.6667"
+          stroke="#155EEF"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M8.66663 4L12.6666 8L8.66663 12"
+          stroke="#155EEF"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </span>
+  );
 }
 
-const activityItems: ActivityItem[] = [
+/* ------------------------------------------------------------------ */
+/*  Activity feed item                                                  */
+/* ------------------------------------------------------------------ */
+
+interface ActivityItem {
+  readonly title: string;
+  readonly subtitle: string;
+  readonly iconColor: string;
+}
+
+const ACTIVITY_ITEMS: readonly ActivityItem[] = [
   {
-    icon: <CalendarCheck className="h-4 w-4" />,
-    dotColor: "bg-blue-500",
     title: "Meeting scheduled",
     subtitle: "3:00 PM Tomorrow",
+    iconColor: "#12B76A",
   },
   {
-    icon: <UserCheck className="h-4 w-4" />,
-    dotColor: "bg-green-500",
     title: "Lead status updated",
     subtitle: "Marked as Contacted",
+    iconColor: "#155EEF",
   },
   {
-    icon: <Mail className="h-4 w-4" />,
-    dotColor: "bg-purple-500",
     title: "Follow-up email sent",
-    subtitle: 'Re: Project Proposal',
+    subtitle: "Re: Project Proposal",
+    iconColor: "#F79009",
   },
   {
-    icon: <ClipboardList className="h-4 w-4" />,
-    dotColor: "bg-orange-500",
     title: "Task assigned",
     subtitle: "SDR notified for follow-up",
+    iconColor: "#6941C6",
   },
   {
-    icon: <FileText className="h-4 w-4" />,
-    dotColor: "bg-blue-500",
     title: "Content personalized",
     subtitle: "Proposal customized for Acme Inc.",
+    iconColor: "#155EEF",
   },
   {
-    icon: <RefreshCw className="h-4 w-4" />,
-    dotColor: "bg-green-500",
     title: "CRM sync complete",
     subtitle: "Data pushed to Salesforce",
+    iconColor: "#12B76A",
   },
 ];
 
-const repeatedItems: ActivityItem[] = [
-  {
-    icon: <CalendarCheck className="h-4 w-4" />,
-    dotColor: "bg-blue-500",
-    title: "Meeting scheduled",
-    subtitle: "10:00 AM Friday",
-  },
-  {
-    icon: <Mail className="h-4 w-4" />,
-    dotColor: "bg-purple-500",
-    title: "Follow-up email sent",
-    subtitle: "Re: Partnership Discussion",
-  },
-  {
-    icon: <UserCheck className="h-4 w-4" />,
-    dotColor: "bg-green-500",
-    title: "Lead status updated",
-    subtitle: "Marked as Qualified",
-  },
+const RULES: readonly { label: string; checked: boolean }[] = [
+  { label: "Only reply to ICP", checked: true },
+  { label: "Office hours 9-5", checked: true },
+  { label: "Escalate if pricing asked", checked: false },
 ];
 
-const rules = [
-  "Only reply to ICP",
-  "Office hours 9-5",
-  "Escalate if pricing asked",
-];
-
-function ActivityRow({ item }: { item: ActivityItem }) {
+function ActivityFeedCard() {
   return (
-    <div className="flex items-start gap-3 py-2.5 px-4">
+    <div
+      className="flex flex-col overflow-hidden bg-white"
+      style={{
+        width: 310,
+        borderRadius: "16px",
+        boxShadow:
+          "rgba(157, 186, 227, 0.15) 0px 8px 24px 0px, rgba(157, 186, 227, 0.08) 0px 2px 8px 0px",
+      }}
+    >
+      {/* Header */}
       <div
-        className={`mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${item.dotColor} text-white`}
+        className="flex items-center justify-between"
+        style={{ padding: "12px 16px 8px" }}
       >
-        {item.icon}
+        <div className="flex items-center gap-2">
+          <Image
+            src="/images/omni-icon-small.png"
+            alt="Omni Agent"
+            width={24}
+            height={24}
+            className="rounded-full"
+          />
+          <span
+            style={{
+              fontSize: "15px",
+              fontWeight: 500,
+              color: "rgb(23, 23, 23)",
+              letterSpacing: "-0.3px",
+              lineHeight: "19.5px",
+            }}
+          >
+            Omni Agent
+          </span>
+        </div>
+        {/* Auto-Reply toggle */}
+        <div
+          className="flex items-center gap-1.5 rounded-full"
+          style={{
+            backgroundColor: "#155EEF",
+            padding: "4px 10px",
+          }}
+        >
+          <span
+            style={{
+              fontSize: "12.4px",
+              fontWeight: 500,
+              color: "rgb(255, 255, 255)",
+              lineHeight: "17.826px",
+            }}
+          >
+            Auto-Reply is On
+          </span>
+        </div>
       </div>
-      <div className="min-w-0">
-        <p className="text-sm font-semibold text-[#344054]">{item.title}</p>
-        <p className="text-xs text-[#667085]">{item.subtitle}</p>
+
+      {/* Activity feed */}
+      <div
+        className="flex flex-col"
+        style={{ padding: "4px 12px 8px", gap: "4px" }}
+      >
+        {ACTIVITY_ITEMS.map((item) => (
+          <div
+            key={item.title}
+            className="flex items-start gap-2.5 rounded-lg"
+            style={{ padding: "8px 8px" }}
+          >
+            <div
+              className="mt-0.5 shrink-0 rounded-full"
+              style={{
+                width: 8,
+                height: 8,
+                backgroundColor: item.iconColor,
+              }}
+            />
+            <div className="flex flex-col" style={{ gap: "2px" }}>
+              <span
+                style={{
+                  fontSize: "12.4px",
+                  fontWeight: 600,
+                  color: "rgb(25, 26, 28)",
+                  lineHeight: "15.15px",
+                }}
+              >
+                {item.title}
+              </span>
+              <span
+                style={{
+                  fontSize: "12.4px",
+                  fontWeight: 500,
+                  color: "rgb(102, 112, 133)",
+                  lineHeight: "17.826px",
+                }}
+              >
+                {item.subtitle}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Rules section */}
+      <div
+        className="border-t"
+        style={{
+          borderColor: "rgb(228, 231, 236)",
+          padding: "10px 16px 12px",
+        }}
+      >
+        <span
+          style={{
+            fontSize: "9px",
+            fontWeight: 500,
+            color: "rgb(0, 0, 0)",
+            lineHeight: "14.4px",
+          }}
+        >
+          Rules
+        </span>
+        <div className="mt-1.5 flex flex-col gap-1.5">
+          {RULES.map((rule) => (
+            <div key={rule.label} className="flex items-center gap-2">
+              {/* Checkbox */}
+              <div
+                className="flex shrink-0 items-center justify-center rounded"
+                style={{
+                  width: 16,
+                  height: 16,
+                  backgroundColor: rule.checked ? "#155EEF" : "transparent",
+                  border: rule.checked
+                    ? "none"
+                    : "1.5px solid rgb(208, 213, 221)",
+                  borderRadius: "4px",
+                }}
+              >
+                {rule.checked && (
+                  <svg
+                    width="10"
+                    height="10"
+                    viewBox="0 0 10 10"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M2 5L4 7L8 3"
+                      stroke="white"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                )}
+              </div>
+              <span
+                style={{
+                  fontSize: "11px",
+                  fontWeight: 500,
+                  color: "rgb(0, 0, 0)",
+                  lineHeight: "17.6px",
+                }}
+              >
+                {rule.label}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
 }
 
+/* ------------------------------------------------------------------ */
+/*  Main export                                                        */
+/* ------------------------------------------------------------------ */
+
 export default function SignalResponseSection() {
   return (
-    <section className="w-full bg-white py-20">
-      <div className="mx-auto grid max-w-[1200px] grid-cols-1 items-center gap-12 px-6 md:grid-cols-2 md:gap-12">
-        {/* Left column — text */}
-        <div className="flex flex-col items-start">
-          <h2
-            className="text-[36px] font-semibold leading-[1.2] tracking-[-0.72px] text-[#0C111D]"
+    <section className="flex w-full items-center justify-center overflow-hidden bg-[#F4F8FF]">
+      <div
+        className="flex w-full max-w-[1150px] flex-col items-start justify-center"
+        style={{ padding: "25px 20px 50px", gap: "36px" }}
+      >
+        {/* Desktop Card */}
+        <div
+          className="relative flex w-full overflow-hidden bg-white"
+          style={{
+            maxWidth: 1110,
+            height: 500,
+            borderRadius: "20px",
+          }}
+        >
+          {/* Left Column — Text + CTA */}
+          <div
+            className="relative z-[2] flex flex-col justify-center"
+            style={{ width: 421, padding: "40px 40px 40px 50px" }}
           >
-            Sees every signal. Responds in seconds.
-          </h2>
-          <p className="mt-5 text-base leading-relaxed text-[#475467]">
-            Omni SDR watches email opens, link clicks, form fills, and LinkedIn
-            replies&mdash;then follows up instantly with context-aware messages,
-            turning interest into meetings.
-          </p>
-          <a
-            href="#"
-            className="mt-8 inline-flex items-center justify-center rounded-full bg-[#155EEF] px-6 py-3 font-medium text-white transition-colors hover:bg-[#1249cc]"
-          >
-            Get Started
-          </a>
-        </div>
-
-        {/* Right column — activity feed mockup */}
-        <div className="w-full overflow-hidden rounded-2xl border border-[#E4E7EC] bg-white shadow-lg">
-          {/* Card header */}
-          <div className="flex items-center justify-between border-b border-[#E4E7EC] px-4 py-3">
-            <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#155EEF] text-white">
-                <Bot className="h-4 w-4" />
-              </div>
-              <span className="text-sm font-semibold text-[#344054]">
-                Omni Agent
-              </span>
+            {/* Text */}
+            <div className="flex flex-col" style={{ gap: "8px" }}>
+              <h2
+                style={{
+                  fontSize: "37.6px",
+                  fontWeight: 700,
+                  color: "rgb(24, 34, 48)",
+                  lineHeight: "45.12px",
+                  letterSpacing: "-0.752px",
+                  margin: 0,
+                }}
+              >
+                Sees every signal. Responds in seconds.
+              </h2>
+              <p
+                style={{
+                  fontSize: "16px",
+                  fontWeight: 500,
+                  color: "rgb(71, 84, 103)",
+                  lineHeight: "25.6px",
+                  letterSpacing: "-0.32px",
+                  margin: 0,
+                }}
+              >
+                Omni SDR watches email opens, link clicks, form fills, and
+                LinkedIn replies—then follows up instantly with context-aware
+                messages, turning interest into meetings.
+              </p>
             </div>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#ECFDF3] px-2.5 py-1 text-xs font-medium text-[#027A48]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#027A48]" />
-              Auto-Reply is On
-            </span>
-          </div>
 
-          {/* Activity feed */}
-          <div className="max-h-[360px] divide-y divide-[#F2F4F7] overflow-y-auto">
-            {activityItems.map((item, i) => (
-              <ActivityRow key={`primary-${i}`} item={item} />
-            ))}
-            {repeatedItems.map((item, i) => (
-              <ActivityRow key={`repeated-${i}`} item={item} />
-            ))}
-          </div>
-
-          {/* Rules footer */}
-          <div className="border-t border-[#E4E7EC] px-4 py-3">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#667085]">
-              Rules
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {rules.map((rule) => (
+            {/* CTA */}
+            <div className="mt-6">
+              <a
+                href="#"
+                className="inline-flex items-center rounded-[1000px] bg-[#155EEF] py-1 pr-1 pl-5 no-underline"
+                style={{ height: 36, width: 136.578 }}
+              >
                 <span
-                  key={rule}
-                  className="rounded-full border border-[#E4E7EC] bg-[#F9FAFB] px-3 py-1 text-xs text-[#344054]"
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: 600,
+                    color: "rgb(255, 255, 255)",
+                    letterSpacing: "-0.32px",
+                    lineHeight: "25.6px",
+                  }}
                 >
-                  {rule}
+                  Get Started
                 </span>
-              ))}
+                <ArrowCircle />
+              </a>
+            </div>
+          </div>
+
+          {/* Right Column — Image + Activity Card */}
+          <div
+            className="relative flex-1"
+            style={{ borderRadius: "20px" }}
+          >
+            {/* Background image */}
+            <div
+              className="absolute overflow-hidden"
+              style={{
+                left: 37,
+                top: 17,
+                right: 0,
+                bottom: 16,
+                borderRadius: "20px",
+              }}
+            >
+              <Image
+                src="/images/person-man-suit.jpg"
+                alt="Professional at work"
+                width={794}
+                height={364}
+                className="h-full w-full object-cover"
+                style={{ objectPosition: "center" }}
+              />
+            </div>
+
+            {/* Activity Card Overlay */}
+            <div
+              className="absolute z-[2]"
+              style={{ left: -48, top: 116 }}
+            >
+              <ActivityFeedCard />
             </div>
           </div>
         </div>

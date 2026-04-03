@@ -1,0 +1,37 @@
+"use client";
+
+import { useEffect, useRef, type ReactNode } from "react";
+
+interface ScrollRevealProps {
+  readonly children: ReactNode;
+  readonly className?: string;
+  readonly threshold?: number;
+}
+
+export default function ScrollReveal({ children, className = "", threshold = 0.15 }: ScrollRevealProps) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.classList.add("revealed");
+          observer.unobserve(el);
+        }
+      },
+      { threshold },
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [threshold]);
+
+  return (
+    <div ref={ref} className={`scroll-reveal ${className}`}>
+      {children}
+    </div>
+  );
+}

@@ -16,6 +16,7 @@ import BlogSection from "@/components/BlogSection";
 import FAQSection from "@/components/FAQSection";
 import CTASection from "@/components/CTASection";
 import Footer from "@/components/Footer";
+import ScrollReveal from "@/components/ScrollReveal";
 
 export default function Home() {
   return (
@@ -23,20 +24,48 @@ export default function Home() {
       <Navbar />
       <main>
         <HeroSection />
-        <FeaturesSection />
-        <TrustedBySection />
-        <SignalResponseSection />
-        <ManualVsAISection />
-        <AgentsPipelineSection />
-        <ROICalculatorSection />
-        <CorePillarsSection />
-        <RoleBasedSection />
-        <HowItWorksSection />
-        <CaseStudiesSection />
-        <PricingSection />
-        <TestimonialsSection />
-        <BlogSection />
-        <FAQSection />
+        <ScrollReveal>
+          <FeaturesSection />
+        </ScrollReveal>
+        <ScrollReveal>
+          <TrustedBySection />
+        </ScrollReveal>
+        <ScrollReveal>
+          <SignalResponseSection />
+        </ScrollReveal>
+        <ScrollReveal>
+          <ManualVsAISection />
+        </ScrollReveal>
+        <ScrollReveal>
+          <AgentsPipelineSection />
+        </ScrollReveal>
+        <ScrollReveal>
+          <ROICalculatorSection />
+        </ScrollReveal>
+        <ScrollReveal>
+          <CorePillarsSection />
+        </ScrollReveal>
+        <ScrollReveal>
+          <RoleBasedSection />
+        </ScrollReveal>
+        <ScrollReveal>
+          <HowItWorksSection />
+        </ScrollReveal>
+        <ScrollReveal>
+          <CaseStudiesSection />
+        </ScrollReveal>
+        <ScrollReveal>
+          <PricingSection />
+        </ScrollReveal>
+        <ScrollReveal>
+          <TestimonialsSection />
+        </ScrollReveal>
+        <ScrollReveal>
+          <BlogSection />
+        </ScrollReveal>
+        <ScrollReveal>
+          <FAQSection />
+        </ScrollReveal>
         <CTASection />
       </main>
       <Footer />

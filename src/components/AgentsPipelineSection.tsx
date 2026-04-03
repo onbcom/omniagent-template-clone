@@ -231,12 +231,14 @@ function LeadResearchVisual() {
       className="relative flex items-center justify-center"
       style={{ width: 422, height: 343 }}
     >
-      {/* Radar concentric circles */}
+      {/* Animated Radar concentric circles */}
       <div className="absolute flex items-center justify-center" style={{ width: 288, height: 288, right: 20, top: 0 }}>
-        <div className="absolute rounded-full border border-[#155EEF]/5" style={{ width: 288, height: 288 }} />
-        <div className="absolute rounded-full border border-[#155EEF]/10" style={{ width: 220, height: 220 }} />
-        <div className="absolute rounded-full border border-[#155EEF]/15" style={{ width: 150, height: 150 }} />
-        <div className="absolute rounded-full border border-[#155EEF]/20" style={{ width: 80, height: 80 }} />
+        <div className="hero-radar-ring" style={{ width: 288, height: 288, borderColor: "rgba(21, 94, 239, 0.06)", animationDelay: "0s" }} />
+        <div className="hero-radar-ring" style={{ width: 220, height: 220, borderColor: "rgba(21, 94, 239, 0.1)", animationDelay: "0.5s" }} />
+        <div className="hero-radar-ring" style={{ width: 150, height: 150, borderColor: "rgba(21, 94, 239, 0.16)", animationDelay: "1s" }} />
+        <div className="hero-radar-ring" style={{ width: 80, height: 80, borderColor: "rgba(21, 94, 239, 0.2)", background: "radial-gradient(circle, rgba(21, 94, 239, 0.08) 0%, transparent 100%)", animationDelay: "1.5s" }} />
+        {/* Sweep */}
+        <div className="hero-radar-sweep" style={{ width: 144, height: 144 }} />
         {/* Logo orb center */}
         <div className="absolute z-[2]">
           <Image

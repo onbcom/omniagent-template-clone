@@ -1,4 +1,10 @@
+"use client";
+
 import Image from "next/image";
+
+/* ------------------------------------------------------------------ */
+/*  Data                                                                */
+/* ------------------------------------------------------------------ */
 
 interface ActivityPill {
   readonly label: string;
@@ -10,14 +16,30 @@ const ACTIVITY_PILLS: readonly ActivityPill[] = [
   { label: "Qualified Leads", color: "rgb(18, 183, 106)" },
   { label: "Recovered orders", color: "rgb(18, 183, 106)" },
   { label: "Scheduled Callbacks", color: "rgb(18, 183, 106)" },
-  {
-    label: "Generic inquiry emails",
-    color: "rgb(240, 68, 56)",
-    strikethrough: true,
-  },
+  { label: "Generic inquiry emails", color: "rgb(240, 68, 56)", strikethrough: true },
 ];
 
-const AVATAR_COUNT = 8;
+interface AvatarPosition {
+  readonly src: string;
+  readonly top: string;
+  readonly left: string;
+  readonly delay: string;
+}
+
+const HERO_AVATARS: readonly AvatarPosition[] = [
+  { src: "/images/hero-avatar-0.png", top: "75%", left: "28%", delay: "0s" },
+  { src: "/images/hero-avatar-1.png", top: "55%", left: "18%", delay: "0.5s" },
+  { src: "/images/hero-avatar-2.png", top: "15%", left: "22%", delay: "1s" },
+  { src: "/images/hero-avatar-3.png", top: "5%", left: "45%", delay: "1.5s" },
+  { src: "/images/hero-avatar-4.png", top: "22%", left: "72%", delay: "0.3s" },
+  { src: "/images/hero-avatar-5.png", top: "42%", left: "82%", delay: "0.8s" },
+  { src: "/images/hero-avatar-6.png", top: "68%", left: "85%", delay: "1.2s" },
+  { src: "/images/hero-avatar-7.png", top: "25%", left: "10%", delay: "0.6s" },
+];
+
+/* ------------------------------------------------------------------ */
+/*  Icons                                                               */
+/* ------------------------------------------------------------------ */
 
 function ChainIcon() {
   return (
@@ -26,78 +48,122 @@ function ChainIcon() {
       height="36"
       viewBox="0 0 36 36"
       fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className="inline-block align-middle mx-1"
+      className="mx-1 inline-block align-middle"
       aria-hidden="true"
     >
-      <path
-        d="M15.75 22.5H12C9.51472 22.5 7.5 20.4853 7.5 18C7.5 15.5147 9.51472 13.5 12 13.5H15.75"
-        stroke="#155EEF"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M20.25 13.5H24C26.4853 13.5 28.5 15.5147 28.5 18C28.5 20.4853 26.4853 22.5 24 22.5H20.25"
-        stroke="#155EEF"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M13.5 18H22.5"
-        stroke="#155EEF"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <path d="M15.75 22.5H12C9.51472 22.5 7.5 20.4853 7.5 18C7.5 15.5147 9.51472 13.5 12 13.5H15.75" stroke="#155EEF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M20.25 13.5H24C26.4853 13.5 28.5 15.5147 28.5 18C28.5 20.4853 26.4853 22.5 24 22.5H20.25" stroke="#155EEF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M13.5 18H22.5" stroke="#155EEF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
 function ArrowIcon() {
   return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
-      <path
-        d="M3.33337 8H12.6667"
-        stroke="#155EEF"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M8.66663 4L12.6666 8L8.66663 12"
-        stroke="#155EEF"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M3.33337 8H12.6667" stroke="#155EEF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M8.66663 4L12.6666 8L8.66663 12" stroke="#155EEF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
+
+/* ------------------------------------------------------------------ */
+/*  Animated Radar Component                                            */
+/* ------------------------------------------------------------------ */
+
+function AnimatedRadar() {
+  return (
+    <div className="hero-radar" style={{ position: "relative", width: 465, height: 465 }}>
+      {/* Concentric circles with pulse animation */}
+      <div className="hero-radar-ring hero-radar-ring-1" />
+      <div className="hero-radar-ring hero-radar-ring-2" />
+      <div className="hero-radar-ring hero-radar-ring-3" />
+      <div className="hero-radar-ring hero-radar-ring-4" />
+
+      {/* Rotating sweep line */}
+      <div className="hero-radar-sweep" />
+
+      {/* Center logo */}
+      <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", zIndex: 5 }}>
+        <Image
+          src="/images/hero-omni-logo.png"
+          alt="Omni Agent"
+          width={151}
+          height={151}
+          style={{ borderRadius: "50%" }}
+        />
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Component                                                           */
+/* ------------------------------------------------------------------ */
 
 export default function HeroSection() {
   return (
     <section
       id="hero"
-      className="relative z-[2] flex w-full flex-col items-center justify-center bg-[#F4F8FF]"
+      className="relative z-[2] flex w-full flex-col items-center justify-center overflow-hidden"
+      style={{ backgroundColor: "#F4F8FF" }}
     >
-      <div className="relative z-[3] flex max-w-[1150px] flex-col items-center overflow-hidden pt-[152px] pb-[50px] w-full px-4">
+      {/* Animated Background — cloudy gradient matching source */}
+      <div
+        className="hero-bg-animation"
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 1,
+          background: "linear-gradient(180deg, #F4F8FF 0%, #F4F8FF 35%, #e0ecff 55%, #c5d8f8 65%, #d0e3ff 75%, #e8f0ff 85%, #F4F8FF 100%)",
+        }}
+      />
+      {/* Soft blue cloud blobs */}
+      <div style={{
+        position: "absolute",
+        bottom: "5%",
+        left: "-10%",
+        width: "60%",
+        height: "50%",
+        background: "radial-gradient(ellipse at center, rgba(21, 94, 239, 0.08) 0%, transparent 70%)",
+        filter: "blur(60px)",
+        zIndex: 1,
+      }} />
+      <div style={{
+        position: "absolute",
+        bottom: "0%",
+        right: "-5%",
+        width: "50%",
+        height: "45%",
+        background: "radial-gradient(ellipse at center, rgba(21, 94, 239, 0.10) 0%, transparent 70%)",
+        filter: "blur(50px)",
+        zIndex: 1,
+      }} />
+      <div style={{
+        position: "absolute",
+        bottom: "10%",
+        left: "30%",
+        width: "40%",
+        height: "40%",
+        background: "radial-gradient(ellipse at center, rgba(255, 255, 255, 0.6) 0%, transparent 70%)",
+        filter: "blur(40px)",
+        zIndex: 1,
+      }} />
+
+      {/* Content */}
+      <div
+        className="relative z-[3] flex w-full max-w-[1150px] flex-col items-center px-4 pt-[152px] pb-[50px]"
+      >
         {/* Hero Text Block */}
         <div className="flex flex-col items-center gap-4 pb-7">
           {/* Tagline Pill */}
           <div
             className="flex h-[34px] items-center rounded-full bg-white px-5"
             style={{
-              boxShadow:
-                "rgba(204,219,235,0.11) 0px 0.6px 0.6px -0.83px, rgba(204,219,235,0.11) 0px 2.3px 2.3px -1.67px, rgba(204,219,235,0.11) 0px 10px 10px -2.5px",
+              boxShadow: "rgba(204,219,235,0.11) 0px 0.6px 0.6px -0.83px, rgba(204,219,235,0.11) 0px 2.3px 2.3px -1.67px, rgba(204,219,235,0.11) 0px 10px 10px -2.5px",
             }}
           >
             <span className="text-[14px] font-semibold text-[#182230]">
@@ -115,8 +181,8 @@ export default function HeroSection() {
               Sleeps
             </h1>
             <p className="text-center text-[16px] font-medium leading-[22.4px] tracking-[-0.32px] text-[#344054]">
-              Automate prospecting, personalize outreach, and book 5× more
-              meetings—before your competition even logs in.
+              Automate prospecting, personalize outreach, and book 5&times; more
+              meetings&mdash;before your competition even logs in.
             </p>
           </div>
         </div>
@@ -124,7 +190,7 @@ export default function HeroSection() {
         {/* CTA Button */}
         <a
           href="#"
-          className="flex flex-row items-center rounded-[1000px] bg-[#155EEF] pl-5 pr-2.5 pt-3 pb-3 no-underline"
+          className="flex flex-row items-center rounded-[1000px] bg-[#155EEF] py-3 pr-2.5 pl-5 no-underline"
           style={{ width: 150.578, height: 52 }}
         >
           <span className="text-[16px] font-semibold leading-none tracking-[-0.32px] text-white">
@@ -135,80 +201,61 @@ export default function HeroSection() {
           </span>
         </a>
 
-        {/* Lower Area */}
-        <div className="flex w-full flex-col items-center">
-          {/* Activity Pills Row */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
-            {ACTIVITY_PILLS.map((pill) => (
-              <div
-                key={pill.label}
-                className="flex items-center gap-2 rounded-full border border-[#E4E7EC] bg-white px-3 py-1.5"
-              >
-                <span
-                  className="h-2 w-2 shrink-0 rounded-full"
-                  style={{ backgroundColor: pill.color }}
-                />
-                <span
-                  className={`text-[14px] font-semibold text-[#191A1C] ${
-                    pill.strikethrough ? "line-through" : ""
-                  }`}
-                >
-                  {pill.label}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          {/* Avatar Stack */}
-          <div className="mt-6 flex items-center justify-center">
-            {Array.from({ length: AVATAR_COUNT }, (_, i) => (
-              <div
-                key={i}
-                className={`relative h-10 w-10 overflow-hidden rounded-full border-2 border-white ${
-                  i > 0 ? "-ml-2" : ""
-                }`}
-              >
-                <Image
-                  src={`/images/avatar-${i + 1}.png`}
-                  alt={`User avatar ${i + 1}`}
-                  width={40}
-                  height={40}
-                  className="h-full w-full object-cover"
-                />
-              </div>
-            ))}
-          </div>
-
-          {/* Processing Graphic */}
-          <div className="relative mt-8 flex flex-col items-center">
-            <Image
-              src="/images/hero-circle-graphic.png"
-              alt="Processing circle graphic"
-              width={400}
-              height={400}
-              className="relative z-[2]"
-            />
-            {/* Processing Label */}
-            <div className="relative z-[2] mt-3 flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[#12B76A]" />
-              <span className="text-[14px] font-medium text-[#344054]">
-                Processing
-              </span>
+        {/* Hero Animation Area */}
+        <div className="relative mt-8 flex w-full items-center justify-center" style={{ height: 500 }}>
+          {/* Floating Avatars */}
+          {HERO_AVATARS.map((avatar, i) => (
+            <div
+              key={i}
+              className="hero-floating-avatar"
+              style={{
+                position: "absolute",
+                top: avatar.top,
+                left: avatar.left,
+                animationDelay: avatar.delay,
+                zIndex: 4,
+              }}
+            >
+              <Image
+                src={avatar.src}
+                alt={`Avatar ${i + 1}`}
+                width={51}
+                height={51}
+                className="rounded-full"
+                style={{ width: 51, height: 51, objectFit: "cover" }}
+              />
             </div>
+          ))}
+
+          {/* Animated Radar */}
+          <AnimatedRadar />
+
+          {/* Prospect Discovery Label */}
+          <div
+            className="absolute flex items-center gap-2"
+            style={{ bottom: 40, left: "50%", transform: "translateX(-50%)", zIndex: 5 }}
+          >
+            <span className="h-2 w-2 rounded-full bg-[#12B76A]" />
+            <span className="text-[14px] font-medium text-[#344054]">
+              Prospect Discovery
+            </span>
           </div>
         </div>
-      </div>
 
-      {/* Watercolor Background */}
-      <div className="absolute bottom-[-43px] left-0 z-[1] w-full">
-        <Image
-          src="/images/hero-watercolor-bg.png"
-          alt=""
-          width={1920}
-          height={600}
-          className="h-auto w-full object-cover"
-          priority
-        />
+        {/* Activity Pills Row */}
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+          {ACTIVITY_PILLS.map((pill) => (
+            <div
+              key={pill.label}
+              className="flex items-center gap-2 rounded-full border border-[#E4E7EC] bg-white px-3 py-1.5"
+            >
+              <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: pill.color }} />
+              <span className={`text-[14px] font-semibold text-[#191A1C] ${pill.strikethrough ? "line-through" : ""}`}>
+                {pill.label}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

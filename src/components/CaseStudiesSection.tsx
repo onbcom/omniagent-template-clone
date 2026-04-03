@@ -18,7 +18,7 @@ const caseStudies: CaseStudy[] = [
     role: "Head of Sales, FlowForge",
     quote:
       "The SDR agent handled our outreach like a seasoned rep. The personalization was spot on\u2014messages felt natural and tailored. Prospects actually replied thinking it was a real person.",
-    image: "/images/flower-lilac.jpg",
+    image: "/images/person-michael.jpg",
     stats: ["3x More meetings booked weekly", "75% Reduction in manual outreach"],
     cta: "See Michael\u2019s Story",
   },
@@ -27,7 +27,7 @@ const caseStudies: CaseStudy[] = [
     role: "Growth Lead, Beaconly",
     quote:
       "We don\u2019t have a huge sales team, so Omni SDR was like hiring 3 reps overnight. It learns fast, personalizes well, and doesn\u2019t miss follow-ups. Our inbound and outbound are now in sync.",
-    image: "/images/flower-purple.jpg",
+    image: "/images/person-sarah.jpg",
     stats: ["4x Increase in Responses", "2x ROI-positive (2 Weeks)"],
     cta: "See Sarah\u2019s Story",
   },
@@ -36,7 +36,7 @@ const caseStudies: CaseStudy[] = [
     role: "Sales Director, NovaShift",
     quote:
       "I was skeptical at first, but Omni SDR proved me wrong fast. We had cold leads turning warm in days, and our CRM stayed organized without any of us touching it. It just runs.",
-    image: "/images/flower-yellow.jpg",
+    image: "/images/person-lisa.png",
     stats: ["60% Boost in cold lead conversions", "90 Hours saved every month"],
     cta: "See Lisa\u2019s Story",
   },

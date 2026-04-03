@@ -92,33 +92,27 @@ export default function PricingSection() {
             return (
               <div
                 key={plan.name}
-                className={`bg-white rounded-2xl p-8 border ${
+                className={`rounded-2xl p-8 border relative ${
                   plan.highlighted
-                    ? "border-[#155EEF] shadow-lg"
-                    : "border-[#E4E7EC]"
-                } relative`}
+                    ? "bg-[#191A1C] border-[#2A2B2D]"
+                    : "bg-white border-[#E4E7EC]"
+                }`}
               >
-                {plan.highlighted && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#155EEF] text-white text-xs font-semibold px-3 py-1 rounded-full">
-                    Popular
-                  </span>
-                )}
-
-                <h3 className="text-lg font-semibold text-[#0C111D]">
+                <h3 className={`text-lg font-semibold ${plan.highlighted ? "text-white" : "text-[#0C111D]"}`}>
                   {plan.name}
                 </h3>
 
                 <div className="mt-4 flex items-end gap-1">
-                  <span className="text-[48px] font-bold leading-none text-[#0C111D]">
+                  <span className={`text-[48px] font-bold leading-none ${plan.highlighted ? "text-white" : "text-[#0C111D]"}`}>
                     ${price}
                   </span>
-                  <span className="text-[16px] font-normal text-[#667085] mb-1">
+                  <span className={`text-[16px] font-normal mb-1 ${plan.highlighted ? "text-white/60" : "text-[#667085]"}`}>
                     /month
                   </span>
                 </div>
 
                 {billing === "yearly" && (
-                  <p className="text-sm text-[#667085] mt-1">
+                  <p className={`text-sm mt-1 ${plan.highlighted ? "text-white/60" : "text-[#667085]"}`}>
                     Billed annually
                   </p>
                 )}
@@ -127,10 +121,10 @@ export default function PricingSection() {
                   {features.map((feature) => (
                     <li key={feature} className="flex items-start gap-3">
                       <Check
-                        className="mt-0.5 size-5 shrink-0 text-[#155EEF]"
+                        className={`mt-0.5 size-5 shrink-0 ${plan.highlighted ? "text-[#5EBCFF]" : "text-[#155EEF]"}`}
                         strokeWidth={2}
                       />
-                      <span className="text-[14px] text-[#475467]">
+                      <span className={`text-[14px] ${plan.highlighted ? "text-white/80" : "text-[#475467]"}`}>
                         {feature}
                       </span>
                     </li>

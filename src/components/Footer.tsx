@@ -55,19 +55,32 @@ function ArrowIcon() {
 /*  Data                                                                */
 /* ------------------------------------------------------------------ */
 
+interface NavLink {
+  readonly label: string;
+  readonly href: string;
+}
+
 interface NavColumn {
   readonly label: string;
-  readonly links: readonly string[];
+  readonly links: readonly NavLink[];
 }
 
 const NAV_COLUMNS: readonly NavColumn[] = [
   {
     label: "WHY OMNI AGENT",
-    links: ["Pricing", "Manual vs AI", "FAQs"],
+    links: [
+      { label: "Pricing", href: "/#pricing" },
+      { label: "Manual vs AI", href: "/#ai-comparison" },
+      { label: "FAQs", href: "/#faq" },
+    ],
   },
   {
     label: "RESOURCES",
-    links: ["Blog", "Case Studies", "Contact Us"],
+    links: [
+      { label: "Blog", href: "/blog" },
+      { label: "Case Studies", href: "/case-studies" },
+      { label: "Contact Us", href: "/contact" },
+    ],
   },
 ];
 
@@ -125,8 +138,8 @@ export default function Footer() {
                 </p>
                 {col.links.map((link) => (
                   <a
-                    key={link}
-                    href="#"
+                    key={link.label}
+                    href={link.href}
                     className="no-underline"
                     style={{
                       fontSize: 16,
@@ -136,7 +149,7 @@ export default function Footer() {
                       letterSpacing: "-0.32px",
                     }}
                   >
-                    {link}
+                    {link.label}
                   </a>
                 ))}
               </div>
@@ -211,7 +224,7 @@ export default function Footer() {
           {/* Legal Links */}
           <div className="flex gap-6">
             <a
-              href="#"
+              href="/terms-and-conditions"
               className="no-underline"
               style={{
                 fontSize: 14,
@@ -223,7 +236,7 @@ export default function Footer() {
               Platform Terms
             </a>
             <a
-              href="#"
+              href="/privacy-policy"
               className="no-underline"
               style={{
                 fontSize: 14,

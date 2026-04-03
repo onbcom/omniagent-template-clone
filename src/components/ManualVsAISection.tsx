@@ -264,6 +264,7 @@ function ProgressHeader({
 export default function ManualVsAISection() {
   return (
     <section
+      id="ai-comparison"
       className="flex w-full flex-col items-center bg-[#F4F8FF]"
       style={{ paddingTop: 80 }}
     >

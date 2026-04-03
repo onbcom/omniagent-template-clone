@@ -279,6 +279,7 @@ export default function PricingSection() {
 
   return (
     <section
+      id="pricing"
       className="flex w-full justify-center"
       style={{ backgroundColor: "rgb(244, 248, 255)" }}
     >

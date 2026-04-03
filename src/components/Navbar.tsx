@@ -4,9 +4,9 @@ import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 
 const NAV_LINKS = [
-  { label: "Home", href: "#hero" },
-  { label: "Pricing", href: "#pricing" },
-  { label: "Our Why", href: "#ai-comparison" },
+  { label: "Home", href: "/#hero" },
+  { label: "Pricing", href: "/#pricing" },
+  { label: "Our Why", href: "/#ai-comparison" },
 ] as const;
 
 export default function Navbar() {
@@ -69,7 +69,7 @@ export default function Navbar() {
       >
         {/* Logo */}
         <a
-          href="#hero"
+          href="/"
           style={{
             display: "flex",
             flexDirection: "row",

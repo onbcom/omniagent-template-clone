@@ -402,11 +402,10 @@ export default function FeaturesSection() {
           {/* Text area */}
           <div className="flex max-w-[648px] flex-col gap-3">
             <h2 className="text-[37.6px] font-bold leading-[45.12px] tracking-[-0.752px] text-[#182230]">
-              Enterprise-Grade Trust, Built&nbsp;In
+              Built for enterprise scale and trust
             </h2>
             <p className="text-[16px] font-medium leading-[25.6px] tracking-[-0.32px] text-[#475467]">
-              Every feature is engineered to earn the confidence of security
-              teams, procurement boards, and revenue leaders alike.
+              Omni SDR meets the highest security, uptime, and support standards&mdash;so your revenue engine never slows down, no matter how fast you grow.
             </p>
           </div>
 
